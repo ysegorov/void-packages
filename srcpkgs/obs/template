@@ -1,6 +1,6 @@
 # Template file for 'obs'
 pkgname=obs
-version=28.0.2
+version=28.1.1
 revision=1
 archs="i686* x86_64* ppc64le* aarch64*"
 wrksrc="obs-studio-${version}"
@@ -20,7 +20,7 @@ license="GPL-2.0-or-later"
 homepage="https://obsproject.com"
 changelog="https://github.com/obsproject/obs-studio/releases"
 distfiles="https://github.com/obsproject/obs-studio/archive/${version}.tar.gz"
-checksum=9c650bf9c891c1d791626474895cb7aeff7b6758a09d81ab32221f8e95c44ce3
+checksum=7e6b1a62b639ea71def51c85e5d24f0d0f42e0ce1b1834c023ba4d14a0963a0a
 
 pre_configure() {
 	# it's not enough to use -DENABLE_BROWSER ...
