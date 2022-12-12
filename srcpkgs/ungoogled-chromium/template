@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=107.0.5304.87
+version=108.0.5359.98
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -18,17 +18,17 @@ _uc_rev=1
 _uc_ver="${version}-${_uc_rev}"
 _uc_name="${pkgname}-${_uc_ver}"
 _launcher_ver=8
-_gcc_patchset=1
+_gcc_patchset=2
 
 distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${version}.tar.xz
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz
  https://github.com/stha09/chromium-patches/releases/download/chromium-${version%%.*}-patchset-${_gcc_patchset}/chromium-${version%%.*}-patchset-${_gcc_patchset}.tar.xz"
 
-checksum="6c0e00c186e22a1be29177ea410ba40ff0bf65f3ded67a345eb5b17f76c93c59
- de6f84f9a1c49fb316f4f4ce1c1fde8e0710a6a196f0bf11dd403b9a53f65c12
+checksum="60b6137971e3cb2947477f654491ed4f517ab88ea2807fa3b89fcce34b83561e
+ 91afcb2ab483b226979b4114ba5ce2aa462658688c10cafd29f78c4be607357e
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a
- 2b26c16f8326803ef287fb443a17bc139a440673955c5a6a38e9368bcaeed7c4"
+ 40ef8af65e78901bb8554eddbbb5ebc55c0b8e7927f6ca51b2a353d1c7c50652"
 
 lib32disabled=yes
 
@@ -112,7 +112,6 @@ do_patch() {
         patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
         patch -Np1 -i $PATCHESDIR/chromium-93-ffmpeg-4.4.patch
         patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
-        patch -Rp1 -i $PATCHESDIR/REVERT-use-ffile-compilation-dir.patch
 
 	# Use the --oauth2-client-id= and --oauth2-client-secret= switches for
 	# setting GOOGLE_DEFAULT_CLIENT_ID and GOOGLE_DEFAULT_CLIENT_SECRET at
@@ -120,12 +119,10 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/use-oauth2-client-switches-as-default.patch
 
 	# Upstream fixes
-        patch -Np1 -i $PATCHESDIR/unbundle-jsoncpp-avoid-CFI-faults-with-is_cfi-true.patch
         patch -Np1 -i $PATCHESDIR/re-fix-TFLite-build-error-on-linux-with-system-zlib.patch
 
-	# Revert kGlobalMediaControlsCastStartStop enabled by default
-	# https://crbug.com/1314342
-	patch -Rp1 -F3 -i $PATCHESDIR/REVERT-enable-GlobalMediaControlsCastStartStop.patch
+        patch -Np1 -i $PATCHESDIR/chromium-icu72.patch
+        patch -Np1 -d v8 <$PATCHESDIR/v8-enhance-Date-parser-to-take-Unicode-SPACE.patch
 
 	# Revert ffmpeg roll requiring new channel layout API support
 	# https://crbug.com/1325301
@@ -133,11 +130,16 @@ do_patch() {
         # Revert switch from AVFrame::pkt_duration to AVFrame::duration
         patch -Rp1 -i $PATCHESDIR/REVERT-roll-src-third_party-ffmpeg-m106.patch
 
+        # Disable kGlobalMediaControlsCastStartStop by default
+        # https://crbug.com/1314342
+        patch -Np1 -i $PATCHESDIR/disable-GlobalMediaControlsCastStartStop.patch
+
 	# https://crbug.com/angleproject/7582
 	patch -Np0 -i $PATCHESDIR/angle-wayland-include-protocol.patch
 
 	# Fixes for building with libstdc++ instead of libc++
 	patch -Np1 -i ../patches/chromium-103-VirtualCursor-std-layout.patch
+	patch -Np1 -i ../patches/chromium-108-compiler.patch
 
 	# Link to system tools required by the build
 	mkdir -p third_party/node/linux/node-linux-x64/bin
@@ -298,7 +300,7 @@ do_configure() {
 		'enable_hangout_services_extension=false'
 
 		'use_system_harfbuzz=false'
-		'use_system_libwayland_server=true'
+		'use_system_libwayland=true'
 		'use_system_wayland_scanner=true'
 
 		'use_qt=false'
