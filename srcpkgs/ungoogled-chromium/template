@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=108.0.5359.98
+version=108.0.5359.124
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -25,8 +25,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz
  https://github.com/stha09/chromium-patches/releases/download/chromium-${version%%.*}-patchset-${_gcc_patchset}/chromium-${version%%.*}-patchset-${_gcc_patchset}.tar.xz"
 
-checksum="60b6137971e3cb2947477f654491ed4f517ab88ea2807fa3b89fcce34b83561e
- 91afcb2ab483b226979b4114ba5ce2aa462658688c10cafd29f78c4be607357e
+checksum="d48dfac2a61b14a5d7d2f460b09b70ef3ab88e27b82e3173938cb54eaa612a75
+ ac71aa130e70bcb5b30fc5f899239851b4bff05938cf4fe6d3f8c2da04e85f70
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a
  40ef8af65e78901bb8554eddbbb5ebc55c0b8e7927f6ca51b2a353d1c7c50652"
 
@@ -42,21 +42,26 @@ desc_option_debug="Build with debug symbols"
 desc_option_js_optimize="Optimize the JS used for Chromium's UI"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 
-hostmakedepends="$(vopt_if clang "clang lld llvm12") python3 pkgconf perl gperf bison ninja nodejs hwids
- libatomic-devel libevent-devel libglib-devel $(vopt_if js_optimize openjdk) wayland-devel libepoxy-devel git"
-makedepends="libpng-devel gtk+3-devel nss-devel pciutils-devel
- libXi-devel libgcrypt-devel cups-devel elfutils-devel
- libXcomposite-devel speech-dispatcher-devel libXrandr-devel mit-krb5-devel
- libXScrnSaver-devel alsa-lib-devel snappy-devel libdrm-devel
- libxml2-devel libxslt-devel $(vopt_if pulseaudio pulseaudio-devel) libexif-devel
- libXcursor-devel libflac-devel speex-devel libmtp-devel libwebp-devel
- libjpeg-turbo-devel libevent-devel json-c-devel
- minizip-devel jsoncpp-devel zlib-devel libcap-devel libXdamage-devel
- re2-devel fontconfig-devel freetype-devel opus-devel libatomic-devel
- brotli-devel ffmpeg-devel jsoncpp-devel libva-devel xcb-proto libcurl-devel
- libxshmfence-devel woff2-devel 
- $(vopt_if pipewire pipewire-devel) $(vopt_if sndio sndio-devel)"
-depends="libexif hwids desktop-file-utils hicolor-icon-theme xdg-utils"
+hostmakedepends="
+ $(vopt_if clang "clang lld llvm12")
+ $(vopt_if js_optimize openjdk)
+ bison git gperf hwids ninja nodejs perl pkg-config python3
+ libatomic-devel libepoxy-devel libevent-devel libglib-devel wayland-devel"
+makedepends="
+ alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel ffmpeg-devel
+ fontconfig-devel freetype-devel gtk+3-devel jsoncpp-devel libXScrnSaver-devel
+ libXcomposite-devel libXcursor-devel libXdamage-devel libXi-devel libXrandr-devel
+ libatomic-devel libavif-devel libcap-devel libcurl-devel libdrm-devel libevent-devel
+ libexif-devel libflac-devel libgcrypt-devel libjpeg-turbo-devel libmtp-devel
+ libpng-devel libva-devel libwebp-devel libxml2-devel libxshmfence-devel
+ libxslt-devel woff2-devel minizip-devel mit-krb5-devel nss-devel opus-devel
+ pciutils-devel re2-devel snappy-devel speech-dispatcher-devel speex-devel
+ xcb-proto zlib-devel libaom-devel
+ $(vopt_if pipewire pipewire-devel)
+ $(vopt_if pulseaudio pulseaudio-devel)
+ $(vopt_if sndio sndio-devel)"
+
+depends="desktop-file-utils hicolor-icon-theme hwids xdg-utils"
 
 if [ "$CROSS_BUILD" ]; then
 	hostmakedepends+=" libX11-devel libxcb-devel pciutils-devel libXext-devel libglvnd-devel
@@ -64,7 +69,8 @@ if [ "$CROSS_BUILD" ]; then
 	 libxml2-devel $(vopt_if pulseaudio pulseaudio-devel) libxslt-devel libxkbcommon-devel
 	 $(vopt_if pipewire pipewire-devel) brotli-devel ffmpeg-devel jsoncpp-devel opus-devel pango-devel libva-devel
 	 libcurl-devel snappy-devel re2-devel libXrandr-devel libXcomposite-devel cups-devel woff2-devel 
-	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel"
+	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel
+	 libavif-devel libaom-devel jsoncpp-devel woff2-devel libdav1d-devel"
 fi
 
 if [ ! "$XBPS_WORDSIZE" = "$XBPS_TARGET_WORDSIZE" ]; then
@@ -79,19 +85,6 @@ if [ "$CROSS_BUILD" ]; then
 fi
 
 do_patch() {
-        local 
-	# Use the file at run time instead of effectively compiling it in
-	sed 's|//third_party/usb_ids/usb.ids|/usr/share/hwdata/usb.ids|g' \
-		-i services/device/public/cpp/usb/BUILD.gn
-
-	if [ -z "$build_option_clang" ]; then
-		# Work around bug in blink in which GCC 6 optimizes away null pointer checks
-		# https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=833524
-		# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=68853#c2
-		sed -i '/config("compiler")/ a cflags_cc = [ "-fno-delete-null-pointer-checks" ]' \
-			build/config/linux/BUILD.gn
-	fi
-
 	# prevent annoying errors when regenerating gni
 	vsed -i 's,^update_readme$,#update_readme,' \
 		third_party/libvpx/generate_gni.sh
@@ -108,7 +101,9 @@ do_patch() {
 	  third_party/maldoca/src/maldoca/ole/oss_utils.h
 	
         # patches from ../chromium/patches/
+        patch -Np1 -i $PATCHESDIR/build-add-use_cxx17.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
+        patch -Np1 -i $PATCHESDIR/old-clang.patch
         patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
         patch -Np1 -i $PATCHESDIR/chromium-93-ffmpeg-4.4.patch
         patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
@@ -139,7 +134,6 @@ do_patch() {
 
 	# Fixes for building with libstdc++ instead of libc++
 	patch -Np1 -i ../patches/chromium-103-VirtualCursor-std-layout.patch
-	patch -Np1 -i ../patches/chromium-108-compiler.patch
 
 	# Link to system tools required by the build
 	mkdir -p third_party/node/linux/node-linux-x64/bin
@@ -170,10 +164,10 @@ _setup_clang() {
 	local clang_version=$(clang -dumpversion)
 	export CC=clang
 	export CXX=clang++
-	export AR=ar
-	export NM=nm
-	export CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fno-plt -Wno-builtin-macro-redefined -Wno-unknown-warning-option"
-	export CXXFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fno-plt -Wno-builtin-macro-redefined -Wno-unknown-warning-option"
+	export AR=llvm-ar
+	export NM=llvm-nm
+	export CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fno-plt -Wno-builtin-macro-redefined -Wno-unknown-warning-option -fdebug-prefix-map=$wrksrc=."
+	export CXXFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fno-plt -Wno-builtin-macro-redefined -Wno-unknown-warning-option -fdebug-prefix-map=$wrksrc=."
         export CPPFLAGS=" -D__DATE__=  -D__TIME__=  -D__TIMESTAMP__="
 	export LDFLAGS=""
 	export BUILD_CC=clang
@@ -224,11 +218,9 @@ do_configure() {
 	# TODO: use_system_ssl (http://crbug.com/58087).
 	# TODO: use_system_sqlite (http://crbug.com/22208).
 	# TODO: use_system_icu (segfaults)
-	# XXX xtraeme: broken currently
 	# use_system_protobuf
 	# use_system_v8=1
-	# use_system_zlib=1
-	# bzip2 jsoncpp minizip xdg_utils speex
+	# bzip2 xdg_utils speex
 	# XXX: harfbuzz-ng use builtin one until system-wide is updated >=3.0.0
 	system="
                 brotli
@@ -254,14 +246,13 @@ do_configure() {
 	# same as the bundeled script to remove bundeled libs, but this way we don't
 	# have to list the remaining libs
 	for LIB in ${system} libjpeg_turbo; do
-		find -type f -path "*third_party/$LIB/*" \
-			\! -path "*third_party/$LIB/chromium/*" \
-			\! -path "*third_party/$LIB/google/*" \
+		find "third_party/$LIB" -type f \
+			\! -path "third_party/$LIB/chromium/*" \
+			\! -path "third_party/$LIB/google/*" \
 			\! -path './base/third_party/icu/*' \
-			\! -path './third_party/pdfium/third_party/freetype/include/pstables.h' \
 			\! -path './third_party/harfbuzz-ng/utils/hb_scoped.h' \
-			\! -regex '.*\.\(gn\|gni\|isolate\|py\)' \
-			-delete
+			\! -regex '.*\.\(gn\|gni\|isolate\)' \
+			-delete || :
 	done
 
 	# switch to system provided dependencies
@@ -280,6 +271,7 @@ do_configure() {
 		"use_lld=$(vopt_if clang true false)"
 		'clang_use_chrome_plugins=false'
 		'clang_base_path="/usr"'
+		'use_cxx17=true'
 
 		"gold_path=\"${XBPS_CROSS_BASE}/usr/bin/ld.gold\""
 		'use_custom_libcxx=false'
