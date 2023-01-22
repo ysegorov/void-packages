@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=108.0.5359.124
+version=109.0.5414.74
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -18,17 +18,17 @@ _uc_rev=1
 _uc_ver="${version}-${_uc_rev}"
 _uc_name="${pkgname}-${_uc_ver}"
 _launcher_ver=8
-_gcc_patchset=2
+_gcc_patchset=1
 
 distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${version}.tar.xz
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz
  https://github.com/stha09/chromium-patches/releases/download/chromium-${version%%.*}-patchset-${_gcc_patchset}/chromium-${version%%.*}-patchset-${_gcc_patchset}.tar.xz"
 
-checksum="d48dfac2a61b14a5d7d2f460b09b70ef3ab88e27b82e3173938cb54eaa612a75
- ac71aa130e70bcb5b30fc5f899239851b4bff05938cf4fe6d3f8c2da04e85f70
+checksum="eded233c26ab631be325ad49cb306c338513b6a6528197d42653e66187548e5d
+ 2e07a6833ca7531ee5f64c24e31069192256bad5abbe1091ca12802ba2ad3a75
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a
- 40ef8af65e78901bb8554eddbbb5ebc55c0b8e7927f6ca51b2a353d1c7c50652"
+ 1ca780a2ad5351f60671a828064392096c8da7b589086ee999f25c9e6e799a7b"
 
 lib32disabled=yes
 
@@ -102,6 +102,8 @@ do_patch() {
 	
         # patches from ../chromium/patches/
         patch -Np1 -i $PATCHESDIR/build-add-use_cxx17.patch
+        patch -Np1 -i $PATCHESDIR/fix-build-with-old-clang.patch
+        patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
         patch -Np1 -i $PATCHESDIR/old-clang.patch
         patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
@@ -114,9 +116,6 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/use-oauth2-client-switches-as-default.patch
 
 	# Upstream fixes
-        patch -Np1 -i $PATCHESDIR/re-fix-TFLite-build-error-on-linux-with-system-zlib.patch
-
-        patch -Np1 -i $PATCHESDIR/chromium-icu72.patch
         patch -Np1 -d v8 <$PATCHESDIR/v8-enhance-Date-parser-to-take-Unicode-SPACE.patch
 
 	# Revert ffmpeg roll requiring new channel layout API support
@@ -284,9 +283,6 @@ do_configure() {
 		"symbol_level=$(vopt_if debug 1 0)"
 
 		'icu_use_data_file=true'
-
-		'use_allocator="none"'
-		'use_allocator_shim=false'
 
 		'enable_widevine=true'
 		'enable_hangout_services_extension=false'
