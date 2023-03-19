@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=110.0.5481.77
+version=111.0.5563.64
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -18,17 +18,17 @@ _uc_rev=1
 _uc_ver="${version}-${_uc_rev}"
 _uc_name="${pkgname}-${_uc_ver}"
 _launcher_ver=8
-_gcc_patchset=4
+_gcc_patchset=2
 
 distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/chromium-${version}.tar.xz
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz
  https://github.com/stha09/chromium-patches/releases/download/chromium-${version%%.*}-patchset-${_gcc_patchset}/chromium-${version%%.*}-patchset-${_gcc_patchset}.tar.xz"
 
-checksum="e348ab2dc4311083e729d714a81e95dd9db108ff71437dde451c97ac939881ce
- 6620119d0b683b989da771885dd186185cc3b8e37e1b4cf143004f340446cbae
+checksum="7d5ca0e2bdb22a97713e6bfce74c651006d71aa883056c8e2c2a148039fe4074
+ 2ad44997d95ae66b36125bf62bf1308006ec62da26ba04f8b5480d7271675079
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a
- 8c7f93037cc236024cc8be815b2c2bd84f6dc9e32685299e31d4c6c42efde8b7"
+ a016588340f1559198e4ce61c6e91c48cf863600f415cb5c46322de7e1f77909"
 
 lib32disabled=yes
 
@@ -101,7 +101,6 @@ do_patch() {
 	  third_party/maldoca/src/maldoca/ole/oss_utils.h
 	
         # patches from ../chromium/patches/
-        patch -Np1 -i $PATCHESDIR/build-add-use_cxx17.patch
         patch -Np1 -i $PATCHESDIR/fix-build-with-old-clang.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
@@ -115,13 +114,7 @@ do_patch() {
 	# runtime -- this allows signing into Chromium without baked-in values
 	patch -Np1 -i $PATCHESDIR/use-oauth2-client-switches-as-default.patch
 
-	# Upstream fixes
-        patch -Np1 -i $PATCHESDIR/fix-the-way-to-handle-codecs-in-the-system-icu.patch
-
-        # https://crbug.com/v8/13630
-        # https://crrev.com/c/4200636
-        # https://github.com/nodejs/node/pull/46125#issuecomment-1407721276
-        patch -Np1 -d v8 <$PATCHESDIR/v8-move-the-Stack-object-from-ThreadLocalTop.patch
+        patch -Np1 -i $PATCHESDIR/sql-relax-constraints-on-VirtualCursor-layout.patch
 
 	# Revert ffmpeg roll requiring new channel layout API support
 	# https://crbug.com/1325301
@@ -132,12 +125,6 @@ do_patch() {
         # Disable kGlobalMediaControlsCastStartStop by default
         # https://crbug.com/1314342
         patch -Np1 -i $PATCHESDIR/disable-GlobalMediaControlsCastStartStop.patch
-
-	# Fixes for building with libstdc++ instead of libc++
-	patch -Np1 -i ../patches/chromium-103-VirtualCursor-std-layout.patch
-        patch -Np1 -i ../patches/chromium-110-NativeThemeBase-fabs.patch
-        patch -Np1 -i ../patches/chromium-110-CredentialUIEntry-const.patch
-        patch -Np1 -i ../patches/chromium-110-DarkModeLABColorSpace-pow.patch
 
 	# Link to system tools required by the build
 	mkdir -p third_party/node/linux/node-linux-x64/bin
