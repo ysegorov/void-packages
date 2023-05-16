@@ -1,6 +1,6 @@
 # Template file for 'erlang'
 pkgname=erlang
-version=25.3
+version=25.3.2
 revision=1
 build_style=gnu-configure
 make_install_target="install install-docs"
@@ -12,7 +12,7 @@ license="Apache-2.0"
 homepage="http://www.erlang.org/"
 changelog="https://github.com/erlang/otp/releases"
 distfiles="https://github.com/erlang/otp/archive/OTP-${version}.tar.gz"
-checksum=f4fc2c5e1da56eb659003015ab80c42e50cef1129cca8c14457a522d1793498d
+checksum=504fc2045198c192de7edbb04e880cbb1ee79b1d9880270b8af8ed2348d2e242
 subpackages="erlang-doc"
 
 if [ -z "$CROSS_BUILD" ]; then
