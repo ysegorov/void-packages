@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=112.0.5615.121
+version=113.0.5672.92
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="9c7227e11b85af2eb828f41c0f83ffa94e17128ed7a368ce4afec9c1357b7ae1
- 102f6c9525577e61d208a83775b4d855147f7103d9080f5cb1f8261fbebbe4c3
+checksum="a4520b53c824d75bcbc80bcf5da0c3d6f213038c8e31904b8a3bfbe415893ba5
+ b36ecce88a380b760c468592c1bb69be4b5dbae20b084ae0aba01236720b3690
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -98,6 +98,9 @@ do_patch() {
 	  third_party/maldoca/src/maldoca/ole/oss_utils.h
 	
         # patches from ../chromium/patches/
+        patch -Np1 -i $PATCHESDIR/add-cstring-for-std-strlen-in-web_view_impl.cc.patch
+        patch -Np1 -i $PATCHESDIR/chromium-113-workaround_clang_bug-structured_binding.patch
+        patch -Np1 -i $PATCHESDIR/download-bubble-typename.patch
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
@@ -105,13 +108,12 @@ do_patch() {
         patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
         patch -Np1 -i $PATCHESDIR/chromium-93-ffmpeg-4.4.patch
         patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
+        patch -Np1 -i $PATCHESDIR/webauthn-variant.patch
 
 	# Use the --oauth2-client-id= and --oauth2-client-secret= switches for
 	# setting GOOGLE_DEFAULT_CLIENT_ID and GOOGLE_DEFAULT_CLIENT_SECRET at
 	# runtime -- this allows signing into Chromium without baked-in values
 	patch -Np1 -i $PATCHESDIR/use-oauth2-client-switches-as-default.patch
-
-        patch -Np1 -i $PATCHESDIR/sql-relax-constraints-on-VirtualCursor-layout.patch
 
         # Revert ffmpeg roll requiring new channel layout API support
         # https://crbug.com/1325301
@@ -194,7 +196,7 @@ do_configure() {
 	# compile gn early, so it can be used to generate gni stuff
 	AR="ar" CC=$CC_FOR_BUILD CXX=$CXX_FOR_BUILD LD=$CXX_FOR_BUILD \
 		CFLAGS=$CFLAGS_FOR_BUILD CXXFLAGS=$CXXFLAGS_FOR_BUILD LDFLAGS=$LDFLAGS_FOR_BUILD \
-		tools/gn/bootstrap/bootstrap.py --skip-generate-buildfiles
+		tools/gn/bootstrap/bootstrap.py ${makejobs} --skip-generate-buildfiles
 
 	# Use system-provided libraries.
 	# TODO: use_system_hunspell (upstream changes needed).
