@@ -1,6 +1,6 @@
 # Template file for 'dbeaver'
 pkgname=dbeaver
-version=23.0.4
+version=23.1.0
 revision=1
 # the build downloads binaries linked to glibc
 archs="x86_64 aarch64"
@@ -12,7 +12,7 @@ license="Apache-2.0"
 homepage="https://dbeaver.io"
 changelog="https://dbeaver.io/news/"
 distfiles="https://github.com/dbeaver/dbeaver/archive/${version}.tar.gz"
-checksum=ddebd3b5b934bd34785037f6647d8f827a92c60b20983615d2902a6aae2e4050
+checksum=85df98086b9984c4379382077f90bee60231fd04e1ccde120e9422e29a462218
 nopie=true
 
 do_build() {

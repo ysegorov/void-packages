@@ -1,6 +1,6 @@
 # Template file for 'nerd-fonts'
 pkgname=nerd-fonts
-version=3.0.0
+version=3.0.2
 revision=1
 depends="nerd-fonts-ttf nerd-fonts-otf"
 short_desc="Iconic font aggregator, collection and patcher"
@@ -9,7 +9,7 @@ license="MIT"
 homepage="https://nerdfonts.com"
 changelog="https://raw.githubusercontent.com/ryanoasis/nerd-fonts/master/changelog.md"
 distfiles="https://github.com/ryanoasis/nerd-fonts/archive/refs/tags/v${version}.tar.gz"
-checksum=994e953cd69e2fd114ce79af422354b14b95418191365f99e11987c55e487243
+checksum=3b18b305451b0b22cb6484197f8029efe54e5c459e8ed3adbb0fb1697c0c13a6
 
 do_install() {
 	vmkdir usr/share/fonts/NerdFonts/otf

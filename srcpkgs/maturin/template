@@ -1,6 +1,6 @@
 # Template file for 'maturin'
 pkgname=maturin
-version=0.15.1
+version=1.1.0
 revision=1
 build_style=python3-pep517
 build_helper="qemu rust"
@@ -12,9 +12,11 @@ maintainer="Andrew J. Hesford <ajh@sideband.org>"
 license="Apache-2.0, MIT"
 homepage="https://github.com/PyO3/maturin"
 distfiles="${homepage}/archive/v${version}.tar.gz"
-checksum=15ab24cc43da24ceca5175847a43ac59b31447b8b545cecca902d219110faee9
+checksum=57b990348a9182897d64e7bc2b7be6e323912500c10a56174090fa8008173ad0
 # Tests use unstable features and fail to build
 make_check=no
+
+export CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse
 
 if [ "$CROSS_BUILD" ]; then
 	makedepends+=" rust-std"

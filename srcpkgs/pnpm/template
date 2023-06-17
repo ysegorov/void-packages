@@ -1,6 +1,6 @@
 # Template file for 'pnpm'
 pkgname=pnpm
-version=7.30.5
+version=8.6.1
 revision=1
 build_style=fetch
 hostmakedepends="nodejs jq"
@@ -10,7 +10,7 @@ maintainer="reback00 <reback00@protonmail.com>"
 license="MIT"
 homepage="https://pnpm.io/"
 distfiles="https://registry.npmjs.org/pnpm/-/pnpm-${version}.tgz"
-checksum=c8d730294f671574458704cd56e81dc0eb8d345a444e4c7a728d8d2cdc4f5045
+checksum=5380612e01e0a3029991d3f329f07429313f4825de47b885b4bb3d1aec9e44e1
 python_version=3
 
 do_install() {
