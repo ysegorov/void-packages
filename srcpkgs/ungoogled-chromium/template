@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=113.0.5672.92
+version=114.0.5735.133
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="a4520b53c824d75bcbc80bcf5da0c3d6f213038c8e31904b8a3bfbe415893ba5
- b36ecce88a380b760c468592c1bb69be4b5dbae20b084ae0aba01236720b3690
+checksum="8289ec1ec9e2540313af10bcf97721ec560789c931fc0583a2f5a545f223d262
+ c6e1908df4ddea8145ca3a77c829901b79a75b8c9573bfa1af4a1d442033a123
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -32,16 +32,14 @@ lib32disabled=yes
 create_wrksrc=yes
 build_wrksrc="chromium-${version}"
 
-build_options="clang debug js_optimize vaapi pulseaudio sndio pipewire"
+build_options="clang debug vaapi pulseaudio sndio pipewire"
 build_options_default="clang vaapi pulseaudio pipewire"
 desc_option_clang="Use clang to build"
 desc_option_debug="Build with debug symbols"
-desc_option_js_optimize="Optimize the JS used for Chromium's UI"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 
 hostmakedepends="
  $(vopt_if clang "clang lld llvm15")
- $(vopt_if js_optimize openjdk)
  bison git gperf hwids ninja nodejs perl pkg-config python3
  libatomic-devel libepoxy-devel libevent-devel libglib-devel"
 makedepends="
@@ -52,8 +50,8 @@ makedepends="
  libexif-devel libflac-devel libgcrypt-devel libjpeg-turbo-devel libmtp-devel
  libpng-devel libva-devel libwebp-devel libxml2-devel libxshmfence-devel
  libxslt-devel woff2-devel minizip-devel mit-krb5-devel nss-devel opus-devel
- pciutils-devel re2-devel snappy-devel speech-dispatcher-devel speex-devel
- xcb-proto zlib-devel libaom-devel libffi-devel
+ pciutils-devel snappy-devel speech-dispatcher-devel speex-devel
+ xcb-proto zlib-devel libaom-devel libffi-devel libevdev-devel
  $(vopt_if pipewire pipewire-devel)
  $(vopt_if pulseaudio pulseaudio-devel)
  $(vopt_if sndio sndio-devel)"
@@ -65,7 +63,7 @@ if [ "$CROSS_BUILD" ]; then
 	 libjpeg-turbo-devel libXi-devel nss-devel libpng-devel libwebp-devel
 	 libxml2-devel $(vopt_if pulseaudio pulseaudio-devel) libxslt-devel libxkbcommon-devel
 	 $(vopt_if pipewire pipewire-devel) brotli-devel ffmpeg-devel jsoncpp-devel opus-devel pango-devel libva-devel
-	 libcurl-devel snappy-devel re2-devel libXrandr-devel libXcomposite-devel cups-devel woff2-devel 
+	 libcurl-devel snappy-devel libXrandr-devel libXcomposite-devel cups-devel woff2-devel
 	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel
 	 libavif-devel libaom-devel jsoncpp-devel woff2-devel libdav1d-devel libflac-devel"
 fi
@@ -98,8 +96,8 @@ do_patch() {
 	  third_party/maldoca/src/maldoca/ole/oss_utils.h
 	
         # patches from ../chromium/patches/
-        patch -Np1 -i $PATCHESDIR/add-cstring-for-std-strlen-in-web_view_impl.cc.patch
-        patch -Np1 -i $PATCHESDIR/chromium-113-workaround_clang_bug-structured_binding.patch
+        patch -Np1 -i $PATCHESDIR/add-some-typename-s-that-are-required-in-C-17.patch
+        patch -Np1 -i $PATCHESDIR/chromium-114-workaround_clang_bug-structured_binding.patch
         patch -Np1 -i $PATCHESDIR/download-bubble-typename.patch
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
@@ -120,6 +118,9 @@ do_patch() {
         patch -Rp1 -i $PATCHESDIR/REVERT-roll-src-third_party-ffmpeg-m102.patch
         # Revert switch from AVFrame::pkt_duration to AVFrame::duration
         patch -Rp1 -i $PATCHESDIR/REVERT-roll-src-third_party-ffmpeg-m106.patch
+
+        # Revert addition of compiler flag that needs newer clang
+        patch -Rp1 -i $PATCHESDIR/REVERT-disable-autoupgrading-debug-info.patch
 
         # Disable kGlobalMediaControlsCastStartStop by default
         # https://crbug.com/1314342
@@ -224,7 +225,6 @@ do_configure() {
 		libxml
 		libxslt
 		opus
-		re2
 		snappy
                 woff2
 	"
@@ -285,9 +285,6 @@ do_configure() {
 
 		# deprecated
 		'use_gnome_keyring=false'
-
-		# https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
-		"enable_js_type_check=$(vopt_if js_optimize true false)"
 
 		"use_pulseaudio=$(vopt_if pulseaudio true false)"
 		"link_pulseaudio=$(vopt_if pulseaudio true false)"
