@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=114.0.5735.133
+version=115.0.5790.102
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="8289ec1ec9e2540313af10bcf97721ec560789c931fc0583a2f5a545f223d262
- c6e1908df4ddea8145ca3a77c829901b79a75b8c9573bfa1af4a1d442033a123
+checksum="06f6e0f22b3a0122eaf5b50a8f603648dc37e7b1178b65ef54e93162b386b06b
+ 56a4c2fbbe5fca51683edf1cb543d83e740331d948ec02a65efb71a824d60110
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -41,7 +41,8 @@ desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 hostmakedepends="
  $(vopt_if clang "clang lld llvm15")
  bison git gperf hwids ninja nodejs perl pkg-config python3
- libatomic-devel libepoxy-devel libevent-devel libglib-devel"
+ libatomic-devel libepoxy-devel libevent-devel libglib-devel
+ rust"
 makedepends="
  alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel ffmpeg-devel
  fontconfig-devel freetype-devel gtk+3-devel jsoncpp-devel libXScrnSaver-devel
@@ -96,13 +97,19 @@ do_patch() {
 	  third_party/maldoca/src/maldoca/ole/oss_utils.h
 	
         # patches from ../chromium/patches/
-        patch -Np1 -i $PATCHESDIR/add-some-typename-s-that-are-required-in-C-17.patch
-        patch -Np1 -i $PATCHESDIR/chromium-114-workaround_clang_bug-structured_binding.patch
-        patch -Np1 -i $PATCHESDIR/download-bubble-typename.patch
+	patch -Np1 -i $PATCHESDIR/chromium-114-maldoca-include.patch
+	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
+	patch -Np1 -i $PATCHESDIR/chromium-115-emplace_back_on_vector-c++20.patch
+	patch -Np1 -i $PATCHESDIR/chromium-115-skia-include.patch
+	patch -Np1 -i $PATCHESDIR/chromium-115-typename.patch
+	patch -Np1 -i $PATCHESDIR/chromium-115-verify_name_match-include.patch
+	patch -Np1 -i $PATCHESDIR/chromium-115-workaround_clang_bug-structured_binding.patch
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
+	patch -Np1 -i $PATCHESDIR/no-mte.patch
         patch -Np1 -i $PATCHESDIR/old-clang.patch
+	patch -Np1 -i $PATCHESDIR/random-fixes.patch
         patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
         patch -Np1 -i $PATCHESDIR/chromium-93-ffmpeg-4.4.patch
         patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
@@ -262,6 +269,9 @@ do_configure() {
 		"gold_path=\"${XBPS_CROSS_BASE}/usr/bin/ld.gold\""
 		'use_custom_libcxx=false'
 		'use_gold=false'
+
+		'rust=true'
+		'rust_sysroot_absolute="/usr"'
 
 		# is_debug makes the build a debug build, changes some things.
 		# might be useful for real debugging vs just debug symbols.
