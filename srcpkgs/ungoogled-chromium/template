@@ -3,7 +3,7 @@
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
 version=115.0.5790.102
-revision=1
+revision=2
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
 maintainer="Yuri Egorov <ysegorov@gmail.com>"
@@ -41,13 +41,13 @@ desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 hostmakedepends="
  $(vopt_if clang "clang lld llvm15")
  bison git gperf hwids ninja nodejs perl pkg-config python3
- libatomic-devel libepoxy-devel libevent-devel libglib-devel
+ libepoxy-devel libevent-devel libglib-devel
  rust"
 makedepends="
  alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel ffmpeg-devel
  fontconfig-devel freetype-devel gtk+3-devel jsoncpp-devel libXScrnSaver-devel
  libXcomposite-devel libXcursor-devel libXdamage-devel libXi-devel libXrandr-devel
- libatomic-devel libavif-devel libcap-devel libcurl-devel libdrm-devel libevent-devel
+ libavif-devel libcap-devel libcurl-devel libdrm-devel libevent-devel
  libexif-devel libflac-devel libgcrypt-devel libjpeg-turbo-devel libmtp-devel
  libpng-devel libva-devel libwebp-devel libxml2-devel libxshmfence-devel
  libxslt-devel woff2-devel minizip-devel mit-krb5-devel nss-devel opus-devel
