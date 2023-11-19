@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=118.0.5993.70
+version=119.0.6045.159
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="49ee00a734de3dae7c421eb3c974e8d451b4de6f5b4e34b603fd6435eab6993d
- d95a02dc7bad01302ed42c9f50daee53c998149f14ba6a4023198e7b1c6f5a36
+checksum="d0d842712805ac81582dc0fecd4396fbf4380713df2fb50ceeb853dd38d1538f
+ 165f2de59bc20691b096036e8ee5ff9e0e80818f656abb9733204bfdba690398
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -65,7 +65,8 @@ if [ "$CROSS_BUILD" ]; then
 	 $(vopt_if pipewire pipewire-devel) brotli-devel ffmpeg-devel jsoncpp-devel opus-devel pango-devel libva-devel
 	 libcurl-devel snappy-devel libXrandr-devel libXcomposite-devel cups-devel woff2-devel
 	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel
-	 libavif-devel libaom-devel jsoncpp-devel woff2-devel libdav1d-devel libflac-devel"
+	 libavif-devel libaom-devel jsoncpp-devel woff2-devel libdav1d-devel libflac-devel
+	 libdrm-devel libgbm-devel"
 fi
 
 if [ ! "$XBPS_WORDSIZE" = "$XBPS_TARGET_WORDSIZE" ]; then
@@ -97,16 +98,19 @@ do_patch() {
 	
         # patches from ../chromium/patches/
 	patch -Np1 -i $PATCHESDIR/chromium-105.0.5195.52-python-six-1.16.0.patch
-	patch -Np1 -i $PATCHESDIR/chromium-114-maldoca-include.patch
 	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-typename.patch
-	patch -Np1 -i $PATCHESDIR/chromium-118-ffmpeg-4.4.patch
-	patch -Np1 -i $PATCHESDIR/chromium-118-missing-header-files.patch
-	patch -Np1 -i $PATCHESDIR/chromium-118-no_matching_constructor.patch
 	patch -Np1 -i $PATCHESDIR/chromium-118-python-3.12-deprecated.patch
-	patch -Np1 -i $PATCHESDIR/chromium-118-use_system_freetype.patch
 	patch -Np1 -i $PATCHESDIR/chromium-118-workaround_clang_bug-structured_binding.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-constexpr.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-ffmpeg-4.4.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-hide-UseChromeOSDirectVideoDecoder-flag-on-VA-API-devices.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-missing-header-files.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-no_matching_constructor.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-nullptr_t-without-namespace-std.patch
+	patch -Np1 -i $PATCHESDIR/chromium-119-nvidia-use-separate-bo-to-verify-modifier.patch
 
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
