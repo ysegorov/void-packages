@@ -469,7 +469,7 @@ libfsimage.so.1.0 xen-libs-4.10.0_1
 libxenstat.so.4.14 xen-libs-4.14.0_1
 libfam.so.0 gamin-0.1.10_1
 libgamin-1.so.0 gamin-0.1.10_1
-libkateprivate.so.23.08.2 libkate-23.08.2_1
+libkateprivate.so.23.08.3 libkate-23.08.3_1
 libKF5SyntaxHighlighting.so.5 syntax-highlighting-5.29.0_1
 libKPim5Libkleo.so.5 libkleo-23.04.0_1
 libKPim5GrantleeTheme.so.5 grantleetheme-23.04.0_1
@@ -555,7 +555,7 @@ libgimpcolor-2.0.so.0 libgimp-2.10.0_1
 libgimpmodule-2.0.so.0 libgimp-2.10.0_1
 libgmic.so.3 gmic-3.1.6_1
 libcgmic.so.3 gmic-3.1.6_1
-libexiv2.so.27 exiv2-0.27_1
+libexiv2.so.28 exiv2-0.28.1_1
 libKF5Holidays.so.5 kholidays-5.47.0_1
 libPhabricatorHelpers.so.5 purpose-5.48.0_1
 libKF5PurposeWidgets.so.5 purpose-5.48.0_1
@@ -1433,7 +1433,7 @@ libgpaste-gtk4.so.0 libgpaste-42.1_1
 libthreadutil.so.6 libupnp-1.6.18_1
 libupnp.so.17 libupnp-1.14.0_1
 libixml.so.11 libupnp-1.14.0_1
-libupnpp.so.12 libupnpp-0.22.2_1
+libupnpp.so.14 libupnpp-0.24.0_1
 libgeocode-glib.so.0 geocode-glib-libsoup2-3.26.4_1
 libgeocode-glib-2.so.0 geocode-glib-3.26.4_2
 libzeitgeist-2.0.so.0 libzeitgeist2-0.9.14_1
@@ -3487,7 +3487,6 @@ libswitchboard-2.0.so.0 switchboard-2.3.2_1
 libcodecore.so.0 libio.elementary.code-3.0_1
 libpantheon-files-core.so.6 libio.elementary.files-6.0.0_1
 libpantheon-files-widgets.so.6 libio.elementary.files-6.0.0_1
-libwlroots.so.9 wlroots0.14-0.14.1_1
 libwlroots.so.10 wlroots0.15-0.15.1_1
 libwlroots.so.11 wlroots0.16-0.16.0_1
 libbaseencode.so.1 libbaseencode-1.0.9_1
@@ -3902,6 +3901,7 @@ libnotcurses++.so.3 notcurses-3.0.5_1
 libnotcurses-ffi.so.3 notcurses-3.0.5_1
 libevemu.so.3 evemu-2.7.0_1
 libinih.so.0 inih-52_1
+libINIReader.so.0 inih-57_1
 libpcaudio.so.0 pcaudiolib-1.1_1
 libdcerpc-samr.so.0 samba-4.13.2_1
 libdcerpc-server-core.so.0 samba-4.13.2_1
@@ -4274,3 +4274,4 @@ libgeotiff.so.5 libgeotiff-1.7.1_1
 libdraco.so.8 draco-1.5.6_1
 libpdal_base.so.15 libpdal-2.5.6_1
 libpdal_util.so.15 libpdal-2.5.6_1
+libdisplay-info.so.1 libdisplay-info-0.1.1_1
