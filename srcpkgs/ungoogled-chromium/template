@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=119.0.6045.199
+version=120.0.6099.109
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="b1ae62beb7907d99802b74821d5198bd54a7456df1116d317da653bde8ce6388
- c9f8747c4e96d2d62b67909895606c546fa7986e184ce1d924a25ca1c11e69e8
+checksum="87c00c525ee07c2233b78dbece1496b697f686244a67fac2c71e4a30bd96849b
+ 8a54932b0f2098dcd334e79e4f680614f57dc192037bc495d2099e28dbc507c8
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -32,9 +32,10 @@ lib32disabled=yes
 create_wrksrc=yes
 build_wrksrc="chromium-${version}"
 
-build_options="clang debug vaapi pulseaudio sndio pipewire"
-build_options_default="clang vaapi pulseaudio pipewire"
+build_options="clang libcxx debug vaapi pulseaudio sndio pipewire"
+build_options_default="clang libcxx vaapi pulseaudio pipewire"
 desc_option_clang="Use clang to build"
+desc_option_libcxx="Use bundled libc++"
 desc_option_debug="Build with debug symbols"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 
@@ -44,12 +45,12 @@ hostmakedepends="
  libepoxy-devel libevent-devel libglib-devel"
 makedepends="
  alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel ffmpeg-devel
- fontconfig-devel freetype-devel gtk+3-devel jsoncpp-devel libXScrnSaver-devel
+ fontconfig-devel freetype-devel gtk+3-devel libXScrnSaver-devel
  libXcomposite-devel libXcursor-devel libXdamage-devel libXi-devel libXrandr-devel
  libavif-devel libcap-devel libcurl-devel libdrm-devel libevent-devel
  libexif-devel libflac-devel libgcrypt-devel libjpeg-turbo-devel libmtp-devel
  libpng-devel libva-devel libwebp-devel libxml2-devel libxshmfence-devel
- libxslt-devel woff2-devel minizip-devel mit-krb5-devel nss-devel opus-devel
+ libxslt-devel minizip-devel mit-krb5-devel nss-devel opus-devel
  pciutils-devel snappy-devel speech-dispatcher-devel speex-devel
  xcb-proto zlib-devel libaom-devel libffi-devel libevdev-devel
  $(vopt_if pipewire pipewire-devel)
@@ -62,10 +63,10 @@ if [ "$CROSS_BUILD" ]; then
 	hostmakedepends+=" libX11-devel libxcb-devel pciutils-devel libXext-devel libglvnd-devel
 	 libjpeg-turbo-devel libXi-devel nss-devel libpng-devel libwebp-devel
 	 libxml2-devel $(vopt_if pulseaudio pulseaudio-devel) libxslt-devel libxkbcommon-devel
-	 $(vopt_if pipewire pipewire-devel) brotli-devel ffmpeg-devel jsoncpp-devel opus-devel pango-devel libva-devel
-	 libcurl-devel snappy-devel libXrandr-devel libXcomposite-devel cups-devel woff2-devel
-	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel
-	 libavif-devel libaom-devel jsoncpp-devel woff2-devel libdav1d-devel libflac-devel
+	 $(vopt_if pipewire pipewire-devel) ffmpeg-devel opus-devel pango-devel libva-devel
+	 libcurl-devel snappy-devel libXrandr-devel libXcomposite-devel cups-devel
+	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel libevdev-devel
+	 libavif-devel libaom-devel libdav1d-devel libflac-devel
 	 libdrm-devel libgbm-devel"
 fi
 
@@ -100,17 +101,19 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-105.0.5195.52-python-six-1.16.0.patch
 	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-117-typename.patch
-	patch -Np1 -i $PATCHESDIR/chromium-118-python-3.12-deprecated.patch
-	patch -Np1 -i $PATCHESDIR/chromium-118-workaround_clang_bug-structured_binding.patch
 	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-constexpr.patch
 	patch -Np1 -i $PATCHESDIR/chromium-119-ffmpeg-4.4.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-hide-UseChromeOSDirectVideoDecoder-flag-on-VA-API-devices.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-missing-header-files.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-no_matching_constructor.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-nullptr_t-without-namespace-std.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-nvidia-use-separate-bo-to-verify-modifier.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-arm64-memory_tagging.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-disable-FFmpegAllowLists.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-disable-GlobalMediaControlsCastStartStop.patch
+	patch -RNp1 -i $PATCHESDIR/chromium-120-el7-clang-build-failure.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-el7-clang-version-warning.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-gn-workaround-atspi.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-missing-header-files.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-no_matching_constructor.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-split-threshold-for-reg-with-hint.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-typename.patch
+	patch -Np1 -i $PATCHESDIR/chromium-120-workaround_clang_bug-structured_binding.patch
 
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
@@ -145,8 +148,6 @@ do_patch() {
 }
 
 _setup_clang() {
-	local gcc_version=$(gcc -dumpversion)
-	local clang_version=$(clang -dumpversion)
 	export CC=clang
 	export CXX=clang++
 	export AR=llvm-ar
@@ -161,23 +162,6 @@ _setup_clang() {
 	export BUILD_NM=llvm-nm
 	export BUILD_CFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fno-plt -Wno-builtin-macro-redefined -Wno-unknown-warning-option"
 	export BUILD_CXXFLAGS="-march=x86-64 -mtune=generic -O2 -pipe -fno-plt -Wno-builtin-macro-redefined -Wno-unknown-warning-option"
-	if [ "$CROSS_BUILD" ]; then
-		CFLAGS+=" --gcc-toolchain=/usr"
-		CFLAGS+=" --sysroot=${XBPS_CROSS_BASE}"
-		CFLAGS+=" -nostdinc"
-		CFLAGS+=" -isystem ${XBPS_CROSS_BASE}/usr/include"
-		CFLAGS+=" -isystem /usr/lib/clang/${clang_version}/include"
-		CXXFLAGS+=" --gcc-toolchain=/usr"
-		CXXFLAGS+=" --sysroot=${XBPS_CROSS_BASE}"
-		CXXFLAGS+=" -nostdinc++"
-		CXXFLAGS+=" -isystem ${XBPS_CROSS_BASE}/usr/include/c++/${gcc_version%.*}"
-		CXXFLAGS+=" -isystem ${XBPS_CROSS_BASE}/usr/include/c++/${gcc_version%.*}/${XBPS_CROSS_TRIPLET}"
-		CXXFLAGS+=" -isystem ${XBPS_CROSS_BASE}/usr/include/c++/${gcc_version%.*}/backward"
-		CXXFLAGS+=" -nostdinc"
-		CXXFLAGS+=" -isystem ${XBPS_CROSS_BASE}/usr/include"
-		CXXFLAGS+=" -isystem /usr/lib/clang/${clang_version}/include"
-		LDFLAGS+=" --gcc-toolchain=/usr --sysroot=${XBPS_CROSS_BASE}"
-	fi
 }
 
 _setup_toolchain() {
@@ -207,12 +191,13 @@ do_configure() {
 	# use_system_v8=1
 	# bzip2 xdg_utils speex
 	# XXX: harfbuzz-ng use builtin one until system-wide is updated >=3.0.0
+	# libcxx https://github.com/llvm/llvm-project/issues/61705:
+	# snappy
 	system="
 		ffmpeg
 		flac
 		fontconfig
 		freetype
-                jsoncpp
 		libdrm
 		libevent
 		libjpeg
@@ -221,8 +206,6 @@ do_configure() {
 		libxml
 		libxslt
 		opus
-		snappy
-                woff2
 	"
 
 	# remove build scripts for system provided dependencies - basically does the
@@ -257,7 +240,7 @@ do_configure() {
 		'clang_base_path="/usr"'
 
 		"gold_path=\"${XBPS_CROSS_BASE}/usr/bin/ld.gold\""
-		'use_custom_libcxx=false'
+		"use_custom_libcxx=$(vopt_if libcxx true false)" # https://github.com/llvm/llvm-project/issues/61705
 		'use_gold=false'
 
 		'rust_sysroot_absolute="/usr"'
@@ -335,11 +318,6 @@ do_configure() {
 		)
 	fi
 
-	# this does not work on ppc64 yet
-	case "$XBPS_TARGET_MACHINE" in
-		ppc64*) conf+=( "enable_jxl_decoder=false" );;
-	esac
-
 	if [ "$XBPS_TARGET_LIBC" = "musl" ]; then
 		conf+=( 'is_musl=true' )
 	fi
@@ -349,7 +327,6 @@ do_configure() {
 		i686*) conf+=( 'target_cpu="x86"' ) ;;
 		arm*) conf+=( 'target_cpu="arm"' ) ;;
 		aarch64*) conf+=( 'target_cpu="arm64"' ) ;;
-		ppc64*) conf+=( 'target_cpu="ppc64"' ) ;;
 	esac
 
 	if [ "$CROSS_BUILD" ]; then
@@ -358,7 +335,6 @@ do_configure() {
 			i686*) conf+=( 'host_cpu="x86"' ) ;;
 			arm*) conf+=( 'host_cpu="arm"' ) ;;
 			aarch64*) conf+=( 'host_cpu="arm64"' ) ;;
-			ppc64*) conf+=( 'host_cpu="ppc64"' ) ;;
 		esac
 	fi
 	_setup_toolchain
