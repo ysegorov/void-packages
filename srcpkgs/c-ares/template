@@ -1,6 +1,6 @@
 # Template file for 'c-ares'
 pkgname=c-ares
-version=1.23.0
+version=1.26.0
 revision=1
 build_style=gnu-configure
 checkdepends="iana-etc"
@@ -10,7 +10,7 @@ license="MIT"
 homepage="https://c-ares.haxx.se/"
 changelog="https://c-ares.haxx.se/changelog.html"
 distfiles="https://c-ares.haxx.se/download/c-ares-${version}.tar.gz"
-checksum=cb614ecf78b477d35963ebffcf486fc9d55cc3d3216f00700e71b7d4868f79f5
+checksum=bed58c4f02b009080ebda6c2467ba469722ac6aebbf4497dc44a83d8c6194e50
 make_check=ci-skip # segfaults only on CI
 
 post_install() {
