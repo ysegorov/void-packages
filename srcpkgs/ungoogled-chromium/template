@@ -2,12 +2,12 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=120.0.6099.129
+version=121.0.6167.184
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
 maintainer="Yuri Egorov <ysegorov@gmail.com>"
-license="BSD"
+license="BSD-3-Clause"
 homepage="https://github.com/ungoogled-software/ungoogled-chromium"
 
 conflicts="chromium"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="be36d5abecfafdc68d9b27b0bee65136316610a295e844b99483a7520b245f85
- 632265238aea25b1c0076e99b4de2f5e53bbafccbb89356d4586c4415dae6ff9
+checksum="9fd6b82e7077ac26ec264bfcfc8ac8e0c2a0240378f035c9c0f34ad467aef09d
+ feb1039d4d5c13fbeb53736e0f0bbfea09c7d71af81bcc7b52d0fb42fd86a4a1
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -40,11 +40,11 @@ desc_option_debug="Build with debug symbols"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 
 hostmakedepends="
- $(vopt_if clang "clang lld llvm15")
+ $(vopt_if clang "clang17 lld17 llvm17 compiler-rt")
  bison git gperf hwids ninja nodejs perl pkg-config python3
- libepoxy-devel libevent-devel libglib-devel"
+ libepoxy-devel libevent-devel libglib-devel rust"
 makedepends="
- alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel ffmpeg-devel
+ alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel
  fontconfig-devel freetype-devel gtk+3-devel libXScrnSaver-devel
  libXcomposite-devel libXcursor-devel libXdamage-devel libXi-devel libXrandr-devel
  libavif-devel libcap-devel libcurl-devel libdrm-devel libevent-devel
@@ -53,6 +53,7 @@ makedepends="
  libxslt-devel minizip-devel mit-krb5-devel nss-devel opus-devel
  pciutils-devel snappy-devel speech-dispatcher-devel speex-devel
  xcb-proto zlib-devel libaom-devel libffi-devel libevdev-devel
+ compiler-rt
  $(vopt_if pipewire pipewire-devel)
  $(vopt_if pulseaudio pulseaudio-devel)
  $(vopt_if sndio sndio-devel)"
@@ -63,7 +64,7 @@ if [ "$CROSS_BUILD" ]; then
 	hostmakedepends+=" libX11-devel libxcb-devel pciutils-devel libXext-devel libglvnd-devel
 	 libjpeg-turbo-devel libXi-devel nss-devel libpng-devel libwebp-devel
 	 libxml2-devel $(vopt_if pulseaudio pulseaudio-devel) libxslt-devel libxkbcommon-devel
-	 $(vopt_if pipewire pipewire-devel) ffmpeg-devel opus-devel pango-devel libva-devel
+	 $(vopt_if pipewire pipewire-devel) opus-devel pango-devel libva-devel
 	 libcurl-devel snappy-devel libXrandr-devel libXcomposite-devel cups-devel
 	 mit-krb5-devel alsa-lib-devel libXdamage-devel libepoxy-devel libevdev-devel
 	 libavif-devel libaom-devel libdav1d-devel libflac-devel
@@ -76,7 +77,7 @@ fi
 
 if [ "$CROSS_BUILD" ]; then
 	case "${XBPS_TARGET_MACHINE}" in
-		aarch64*) ;;
+		# aarch64*) ;;
 		*) nocross="chromium can not be cross compiled for this architecture" ;;
 	esac
 fi
@@ -102,33 +103,33 @@ do_patch() {
         patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
         patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
         patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
-        patch -Np1 -i $PATCHESDIR/chromium-119-ffmpeg-4.4.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-arm64-memory_tagging.patch
         patch -Np1 -i $PATCHESDIR/chromium-120-disable-FFmpegAllowLists.patch
         patch -Np1 -i $PATCHESDIR/chromium-120-disable-GlobalMediaControlsCastStartStop.patch
         patch -RNp1 -i $PATCHESDIR/chromium-120-el7-clang-build-failure.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-el7-clang-version-warning.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-gn-workaround-atspi.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-missing-header-files.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-no_matching_constructor.patch
         patch -Np1 -i $PATCHESDIR/chromium-120-split-threshold-for-reg-with-hint.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-typename.patch
-        patch -Np1 -i $PATCHESDIR/chromium-120-workaround_clang_bug-structured_binding.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-constexpr.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-el7-clang-version-warning.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-el7-default-constructor-involving-anonymous-union.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-missing-header-files.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-mnemonic-error.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-no_matching_constructor.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-nullptr_t-without-namespace-std.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-python3-invalid-escape-sequence.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-rust-clang_lib.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-rust-without-profiler_builtins.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-system-libxml.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-typename.patch
+        patch -Np1 -i $PATCHESDIR/chromium-121-workaround_clang_bug-structured_binding.patch
 
+        patch -Np1 -i $PATCHESDIR/arm64-memmory-tagging.patch
+        patch -Np1 -i $PATCHESDIR/build-support-musl.patch
+        patch -Np1 -i $PATCHESDIR/cross-build.patch
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
-        patch -Np1 -i $PATCHESDIR/gcc13-wnoerror.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
         patch -Np1 -i $PATCHESDIR/old-clang.patch
-        patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
         patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
         patch -Np1 -i $PATCHESDIR/webauthn-variant.patch
-
-        # Revert ffmpeg roll requiring new channel layout API support
-        # https://crbug.com/1325301
-        patch -Rp1 -i $PATCHESDIR/REVERT-roll-src-third_party-ffmpeg-m102.patch
-        # Revert switch from AVFrame::pkt_duration to AVFrame::duration
-        patch -Rp1 -i $PATCHESDIR/REVERT-roll-src-third_party-ffmpeg-m106.patch
 
 	# Link to system tools required by the build
 	mkdir -p third_party/node/linux/node-linux-x64/bin
@@ -178,7 +179,7 @@ _setup_toolchain() {
 }
 
 do_configure() {
-	local system="" conf=()
+	local system=() conf=()
 
 	# compile gn early, so it can be used to generate gni stuff
 	AR="ar" CC=$CC_FOR_BUILD CXX=$CXX_FOR_BUILD LD=$CXX_FOR_BUILD \
@@ -198,8 +199,9 @@ do_configure() {
 	# XXX: harfbuzz-ng use builtin one until system-wide is updated >=3.0.0
 	# libcxx https://github.com/llvm/llvm-project/issues/61705:
 	# snappy
-	system="
-		ffmpeg
+  # ffmpeg: system ffmpeg is too old and makes the ffmpeg update not require
+  #  rebuilding chromium
+	system=(
 		flac
 		fontconfig
 		freetype
@@ -211,12 +213,12 @@ do_configure() {
 		libxml
 		libxslt
 		opus
-	"
+	)
 
 	# remove build scripts for system provided dependencies - basically does the
 	# same as the bundeled script to remove bundeled libs, but this way we don't
 	# have to list the remaining libs
-	for LIB in ${system} libjpeg_turbo; do
+	for LIB in "${system[@]}" libjpeg_turbo; do
 		find "third_party/$LIB" -type f \
 			\! -path "third_party/$LIB/chromium/*" \
 			\! -path "third_party/$LIB/google/*" \
@@ -227,13 +229,13 @@ do_configure() {
 	done
 
 	# switch to system provided dependencies
-	build/linux/unbundle/replace_gn_files.py --system-libraries ${system}
+	build/linux/unbundle/replace_gn_files.py --system-libraries "${system[@]}"
 
 	third_party/libaddressinput/chromium/tools/update-strings.py
 
+  local clang_version="$(clang -dumpversion)"
 	conf=(
 		'enable_nacl=false'
-                'enable_rust=false'
 
 		'use_sysroot=false'
 
@@ -243,12 +245,15 @@ do_configure() {
 		"use_lld=$(vopt_if clang true false)"
 		'clang_use_chrome_plugins=false'
 		'clang_base_path="/usr"'
+    "clang_version=\"${clang_version%%.*}\""
 
 		"gold_path=\"${XBPS_CROSS_BASE}/usr/bin/ld.gold\""
 		"use_custom_libcxx=$(vopt_if libcxx true false)" # https://github.com/llvm/llvm-project/issues/61705
 		'use_gold=false'
 
+    'enable_rust=true'
 		'rust_sysroot_absolute="/usr"'
+    "rustc_version=\"$(rustc --version)\""
 
 		# is_debug makes the build a debug build, changes some things.
 		# might be useful for real debugging vs just debug symbols.
@@ -347,6 +352,9 @@ do_configure() {
 }
 
 do_build() {
+  # XXX: need for error: the option `Z` is only accepted on the nightly compiler
+  export RUSTC_BOOTSTRAP=1
+
 	_setup_toolchain
 	CCACHE_SLOPPINESS=include_file_mtime ninja -C out/Release ${makejobs} chrome chromedriver chrome_crashpad_handler
 }
