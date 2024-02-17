@@ -98,25 +98,26 @@ do_patch() {
 	  third_party/maldoca/src/maldoca/ole/oss_utils.h
 	
         # patches from ../chromium/patches/
-	patch -Np1 -i $PATCHESDIR/chromium-105.0.5195.52-python-six-1.16.0.patch
-	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
-	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-ffmpeg-4.4.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-arm64-memory_tagging.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-disable-FFmpegAllowLists.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-disable-GlobalMediaControlsCastStartStop.patch
-	patch -RNp1 -i $PATCHESDIR/chromium-120-el7-clang-build-failure.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-el7-clang-version-warning.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-gn-workaround-atspi.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-missing-header-files.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-no_matching_constructor.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-split-threshold-for-reg-with-hint.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-typename.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-workaround_clang_bug-structured_binding.patch
+        patch -Np1 -i $PATCHESDIR/chromium-105.0.5195.52-python-six-1.16.0.patch
+        patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
+        patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
+        patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
+        patch -Np1 -i $PATCHESDIR/chromium-119-ffmpeg-4.4.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-arm64-memory_tagging.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-disable-FFmpegAllowLists.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-disable-GlobalMediaControlsCastStartStop.patch
+        patch -RNp1 -i $PATCHESDIR/chromium-120-el7-clang-build-failure.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-el7-clang-version-warning.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-gn-workaround-atspi.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-missing-header-files.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-no_matching_constructor.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-split-threshold-for-reg-with-hint.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-typename.patch
+        patch -Np1 -i $PATCHESDIR/chromium-120-workaround_clang_bug-structured_binding.patch
 
         patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
         patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
+        patch -Np1 -i $PATCHESDIR/gcc13-wnoerror.patch
         patch -Np1 -i $PATCHESDIR/libc_malloc.patch
         patch -Np1 -i $PATCHESDIR/old-clang.patch
         patch -Np1 -i $PATCHESDIR/unbundle-ffmpeg-av_stream_get_first_dts.patch
