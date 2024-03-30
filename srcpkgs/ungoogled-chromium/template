@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=122.0.6261.111
+version=123.0.6312.86
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="0b3da2f0ca63625e84a1b36571f23591248b8fcb422ce683c09283dbfc35c309
- 927ee3d2518d7c4757ba367e98810b18a16b9468c71a4ab39f84b2282a743c23
+checksum="f4a78c1955dac4354d57ab45e93051fcda50fc5fccd681457f8116630746dffe
+ 04e0cdb3c965c027c5a0881d0140acad9a39d18a734cbd4d7044795d8a075664
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -32,12 +32,13 @@ lib32disabled=yes
 create_wrksrc=yes
 build_wrksrc="chromium-${version}"
 
-build_options="clang libcxx debug vaapi pulseaudio sndio pipewire"
+build_options="clang libcxx debug vaapi pulseaudio sndio pipewire lto"
 build_options_default="clang libcxx vaapi pulseaudio pipewire"
 desc_option_clang="Use clang to build"
 desc_option_libcxx="Use bundled libc++"
 desc_option_debug="Build with debug symbols"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
+desc_option_lto="Enable Link Time Optimization"
 
 hostmakedepends="
  $(vopt_if clang "clang17 lld17 llvm17 compiler-rt")
@@ -104,15 +105,12 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-120-split-threshold-for-reg-with-hint.patch
-	patch -Np1 -i $PATCHESDIR/chromium-121-mnemonic-error.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-nullptr_t-without-namespace-std.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-clang_lib.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-without-profiler_builtins.patch
-	# FIXME
-	# patch -Np1 -i $PATCHESDIR/chromium-121-system-libxml.patch
-	patch -Np1 -i $PATCHESDIR/chromium-122-constexpr.patch
 	patch -Np1 -i $PATCHESDIR/chromium-122-disable-FFmpegAllowLists.patch
-	patch -Np1 -i $PATCHESDIR/chromium-122-missing-header-files.patch
+	patch -Np1 -i $PATCHESDIR/chromium-123-constexpr.patch
+	patch -Np1 -i $PATCHESDIR/chromium-123-missing-header-files.patch
 
 	patch -Np1 -i $PATCHESDIR/build-support-musl.patch
 	patch -Np1 -i $PATCHESDIR/cross-build.patch
@@ -192,8 +190,6 @@ do_configure() {
 	# snappy
   # ffmpeg: system ffmpeg is too old and makes the ffmpeg update not require
   #  rebuilding chromium
-	# FIXME libxml
-	# FIXME libxslt
 	system=(
 		flac
 		fontconfig
@@ -203,6 +199,8 @@ do_configure() {
 		libjpeg
 		libpng
 		libwebp
+		libxml
+		libxslt
 		opus
 	)
 
@@ -292,14 +290,15 @@ do_configure() {
 
 		# segfaults with llvm-12.0.1
 		'is_cfi=false'
-		'use_thin_lto=false'
 		'use_cfi_icall=false'
+
+		"use_thin_lto=$(vopt_if lto true false)"
 		'chrome_pgo_phase=0'
 
-                # from ungoogled-chromium-archlinux PKGBUILD
-                'blink_enable_generated_code_formatting=false'
-                'enable_platform_hevc=true'
-                'enable_hevc_parser_and_hw_decoder=true'
+		# from ungoogled-chromium-archlinux PKGBUILD
+		'blink_enable_generated_code_formatting=false'
+		'enable_platform_hevc=true'
+		'enable_hevc_parser_and_hw_decoder=true'
 	)
 
 	# Append ungoogled chromium flags to _flags array
