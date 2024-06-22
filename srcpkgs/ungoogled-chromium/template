@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=125.0.6422.141
+version=126.0.6478.114
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="9966b50279d0cfaaf4b58570387f0d526388f8d5f6dd990e3f083a55d8d8e603
- c7b8ed60dacb22dde8ee69ca82ab9e92e0fa2f9372b7edb441ef6d20dc356f39
+checksum="cf4aad7fccc2a6c2339691c23f4c46ef2818e2474a9f83292b237eaa958015ed
+ ef62c96b0689f2df38636e84a3fffdb924fdcd51ad0b6ec611045ebf58d9f550
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -108,13 +108,13 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-120-split-threshold-for-reg-with-hint.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-nullptr_t-without-namespace-std.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-clang_lib.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-without-profiler_builtins.patch
 	patch -Np1 -i $PATCHESDIR/chromium-124-iwyu-sys-select-dawn-terminal.patch
-	patch -Np1 -i $PATCHESDIR/chromium-124-libavif-deps.patch
 	patch -Np1 -i $PATCHESDIR/chromium-125-disable-FFmpegAllowLists.patch
+	patch -Np1 -i $PATCHESDIR/chromium-125-iwyu-webauthn-variant.patch
+	patch -Np1 -i $PATCHESDIR/chromium-126-split-threshold-for-reg-with-hint.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-revert-drop-of-system-java.patch
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
@@ -239,6 +239,8 @@ do_configure() {
 
   local clang_version="$(clang -dumpversion)"
 	conf=(
+	  'enable_nacl=false'
+
 		'use_sysroot=false'
 
 		'host_pkg_config="/usr/bin/pkg-config"'
@@ -264,6 +266,9 @@ do_configure() {
 		"symbol_level=$(vopt_if debug 1 0)"
 
 		'icu_use_data_file=true'
+
+		'enable_widevine=true'
+		# 'enable_hangout_services_extension=true'
 
 		'use_system_harfbuzz=false'
     'use_system_libffi=true'
