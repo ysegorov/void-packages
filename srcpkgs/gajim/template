@@ -1,6 +1,6 @@
 # Template file for 'gajim'
 pkgname=gajim
-version=1.9.1
+version=1.9.3
 revision=1
 build_style=python3-pep517
 hostmakedepends="gettext python3-wheel"
@@ -18,7 +18,7 @@ license="GPL-3.0-only"
 homepage="https://www.gajim.org"
 changelog="https://dev.gajim.org/gajim/gajim/-/raw/master/ChangeLog"
 distfiles="https://gajim.org/downloads/${version%.*}/gajim-${version}.tar.gz"
-checksum=56f5f31a8f062ed90027f6553a960e6e825e46a6640db643bbd0cc8da1ea5aeb
+checksum=4f15b2503a01bec70a6b6a203eb165ccb0b6abee513323270223a941da453f83
 
 post_build() {
 	./pep517build/build_metadata.py -o dist/metadata
