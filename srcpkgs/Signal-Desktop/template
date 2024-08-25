@@ -1,6 +1,6 @@
 # Template file for 'Signal-Desktop'
 pkgname=Signal-Desktop
-version=7.18.0
+version=7.21.0
 revision=1
 # Signal officially only supports x86_64
 # x86_64-musl could potentially work based on the Alpine port:
@@ -14,7 +14,7 @@ maintainer="Orphaned <orphan@voidlinux.org>"
 license="AGPL-3.0-only"
 homepage="https://github.com/signalapp/Signal-Desktop"
 distfiles="https://github.com/signalapp/Signal-Desktop/archive/v${version}.tar.gz"
-checksum=bf725bd0adcec7194021cf011e81d4db7d9a57eebd33f1e795fe2f5c6e316ed7
+checksum=4506a3639685dd191f713d70ed3c6624a77cafe8fd6ff3f113b340d2cd337526
 nostrip_files="signal-desktop"
 
 post_extract() {
