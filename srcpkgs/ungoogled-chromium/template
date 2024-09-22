@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=127.0.6533.99
+version=128.0.6613.137
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="e33a57b0cab75f2fb8bd128be24da0ee18d4a0052e4cd99ad37fcb8dfc9c5875
- 8d3b6c61cf024642aff0ec850df6c22fc1f7f4a6529ee3276af60eaef6dcc6ba
+checksum="e1d39c170dfdc2627a7b003e11d77f04a578b8e1cfe41e714cdaa345c91f4943
+ 94e2f80f72b1c0f791c826c734a676cd0cb60ebaaf2a8a4941a8475a15f5508d
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -41,7 +41,7 @@ desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 desc_option_lto="Enable Link Time Optimization"
 
 hostmakedepends="
- $(vopt_if clang "clang17 lld17 llvm17 compiler-rt")
+ $(vopt_if clang "clang18 lld18 llvm18 compiler-rt")
  bison git gperf hwids ninja nodejs perl pkg-config python3
  libepoxy-devel libevent-devel libglib-devel rust rust-bindgen"
 makedepends="
@@ -107,7 +107,6 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-121-nullptr_t-without-namespace-std.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-clang_lib.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-without-profiler_builtins.patch
 	patch -Np1 -i $PATCHESDIR/chromium-124-iwyu-sys-select-dawn-terminal.patch
@@ -115,14 +114,12 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-125-iwyu-webauthn-variant.patch
 	patch -Np1 -i $PATCHESDIR/chromium-126-split-threshold-for-reg-with-hint.patch
 
-	patch -Np1 -i $PATCHESDIR/chromium-browser-ui-missing-deps.patch
 	patch -Np1 -i $PATCHESDIR/chromium-revert-drop-of-system-java.patch
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/cross-build.patch
 	patch -Np1 -i $PATCHESDIR/fc-cache-version.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
 	patch -Np1 -i $PATCHESDIR/fix-constexpr-narrowing.patch
-	patch -Np1 -i $PATCHESDIR/fix-dawn-platform.patch
 	patch -Np1 -i $PATCHESDIR/fix-libc-version-include.patch
 	patch -Np1 -i $PATCHESDIR/fix-missing-TEMP_FAILURE_RETRY-macro.patch
 	patch -Np1 -i $PATCHESDIR/libc_malloc.patch
