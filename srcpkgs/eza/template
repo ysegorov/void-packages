@@ -1,19 +1,19 @@
 # Template file for 'eza'
 pkgname=eza
-version=0.19.4
+version=0.20.1
 revision=1
 build_style=cargo
 hostmakedepends="pkg-config"
 makedepends="libgit2-1.8-devel"
 short_desc="Modern, maintained replacement for ls"
 maintainer="tranzystorekk <tranzystorek.io@protonmail.com>"
-license="MIT"
+license="EUPL-1.2"
 homepage="https://eza.rocks"
 changelog="https://raw.githubusercontent.com/eza-community/eza/main/CHANGELOG.md"
 distfiles="https://github.com/eza-community/eza/archive/refs/tags/v${version}.tar.gz
  https://github.com/eza-community/eza/releases/download/v${version}/man-${version}.tar.gz"
-checksum="c0094b3ee230702d4dd983045e38ea2bd96375c16381c0206c88fae82fb551a4
- cc3b61aad6f480566babc2896ff3306decac16fa5fa99d2a25b1a08e0b23e013"
+checksum="e78a84cc5324ebb6481293d32edfdbc7de78511d5190b4808a0896f8ce4d652e
+ 867f48f7abba5b7cafb9e8be9c8055cf2241db150453a475157742f9da140e97"
 
 skip_extraction="man-${version}.tar.gz"
 
@@ -30,7 +30,7 @@ post_install() {
 		vman ${manpage}
 	done
 
-	vlicense LICENCE
+	vlicense LICENSE.txt
 
 	ln -s eza ${DESTDIR}/usr/bin/exa
 }
