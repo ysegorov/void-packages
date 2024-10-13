@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=129.0.6668.70
+version=129.0.6668.100
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="094ddec3774b54feb04dcfb020e61766de16feabb04850d73ef82e38c4bbf2b5
- a9eb8896329304e429552fb15c640debd87bc6c66b051f802d3da5d707c24744
+checksum="281daed29a5cb546f6273130035d9980666d2232f356ad95fc06af3c90121bc2
+ 0d5688bffb7050913a5e0749da1926e551468fd3362c2f9b33912d68a6dccfa9
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
