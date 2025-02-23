@@ -2,8 +2,8 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=132.0.6834.110
-revision=1
+version=133.0.6943.126
+revision=2
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
 maintainer="Yuri Egorov <ysegorov@gmail.com>"
@@ -23,8 +23,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="e18a1c9575371c9e0511798bac52fd682456f507081bfefd013c58b8d13e52a9
- bb1b2cc70cf1f737511b187afa4c626f26270a9eafc46434f4c9fe987e9d5314
+checksum="bb99b5d8a4ec2374f58d3b6c694bffde91af1b80db5c46783166dd51beada024
+ 337d952efa8927a4fc577e03fcab397165f7448a58fb7fd01897e6b663a17885
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -41,18 +41,18 @@ desc_option_lto="Enable Link Time Optimization"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 desc_option_drumbrake="WebAssembly Interpreter"
 
-_llvmver=18
+_llvmver=19
 
 hostmakedepends="
  $(vopt_if clang "clang${_llvmver} lld${_llvmver} llvm${_llvmver} compiler-rt${_llvmver}")
  bison git gperf hwids ninja nodejs perl pkg-config python3
- libepoxy-devel libevent-devel libglib-devel rust rust-bindgen
+ libepoxy-devel libglib-devel rust rust-bindgen
  gn"
 makedepends="
  alsa-lib-devel libdav1d-devel brotli-devel cups-devel elfutils-devel
  fontconfig-devel freetype-devel gtk+3-devel libXScrnSaver-devel
  libXcomposite-devel libXcursor-devel libXdamage-devel libXi-devel libXrandr-devel
- libavif-devel libcap-devel libcurl-devel libdrm-devel libevent-devel
+ libavif-devel libcap-devel libcurl-devel libdrm-devel
  libexif-devel libflac-devel libgcrypt-devel libjpeg-turbo-devel libmtp-devel
  libpng-devel libva-devel libwebp-devel libxml2-devel libxshmfence-devel
  libxslt-devel minizip-devel mit-krb5-devel nss-devel opus-devel
@@ -107,15 +107,12 @@ do_patch() {
 
 	# patches from ../chromium/patches/
 	patch -Np1 -i $PATCHESDIR/angle-wayland-include.patch
-	patch -Np1 -i $PATCHESDIR/browser-size_t.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-119-assert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-clang_lib.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-without-profiler_builtins.patch
 	patch -Np1 -i $PATCHESDIR/chromium-124-iwyu-sys-select-dawn-terminal.patch
-	patch -Np1 -i $PATCHESDIR/chromium-125-disable-FFmpegAllowLists.patch
 	patch -Np1 -i $PATCHESDIR/chromium-126-split-threshold-for-reg-with-hint.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-revert-drop-of-system-java.patch
@@ -133,8 +130,6 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/sndio.patch
 	patch -Np1 -i $PATCHESDIR/systypes.patch
 	patch -Np1 -i $PATCHESDIR/unbundled-cross-toolchain.patch
-	patch -Np1 -i $PATCHESDIR/ungoogled-fix-ctad.patch
-	patch -Np1 -i $PATCHESDIR/ungoogled-fix-elf-crel.patch
 	patch -Np1 -i $PATCHESDIR/webrtc-size_t.patch
 
 	# Ungoogled Chromium changes
@@ -213,7 +208,6 @@ do_configure() {
 		fontconfig
 		freetype
 		libdrm
-		libevent
 		libjpeg
 		libpng
 		libwebp
