@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=134.0.6998.117
+version=135.0.7049.84
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -24,8 +24,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="f7bd8c47115dfc539380af85193fddc75782dfbd4ac9de1332566b5816006d1b
- 88992a6ba123b8ee464d8c4e47160dce508b83bafba6bb21c96a127543316e99
+checksum="c1e8d9cd9913d3e91d08b212d8346b2da48e884e5b180d5cd783f0c0756a20f7
+ 13d7c11a678ae1a729996d2f2906c079cca8e015ba28f2f62ff6ba26c89e165a
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -109,7 +109,6 @@ do_patch() {
 	# patches from ../chromium/patches/
 	patch -Np1 -i $PATCHESDIR/angle-wayland-include.patch
 
-	patch -Np1 -i $PATCHESDIR/chromium-115-compiler-SkColor4f.patch
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-clang_lib.patch
 	patch -Np1 -i $PATCHESDIR/chromium-121-rust-without-profiler_builtins.patch
@@ -149,9 +148,6 @@ do_patch() {
 	rm -f third_party/node/linux/node-linux-x64/bin/node
 	ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 	ln -s /usr/bin/java third_party/jdk/current/bin/
-	# Rust 1.86 ships adler2 but we need to change it to adler when
-	# using older Rust versions (idea for this borrowed from Gentoo^WArch)
-	sed -i 's/adler2/adler/' build/rust/std/BUILD.gn
 }
 
 _setup_clang() {
