@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=135.0.7049.114
+version=136.0.7103.59
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -24,8 +24,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="33c538ae7443d0cc11b9841276d20abe8c260198fa50e905e88aa9b8c2052e83
- bac5b844e936ec0340cdaa7e9a8d5b4cc3875d30828a1d6fa816f980d0f96e2e
+checksum="a124a9bc3f6f3e24fa97c5ec59d94a040b774a8fbca2e1196bf39b240f0d42f2
+ 230078f31d61584de281e4601a785d660ba59206172905a381d9c2db69b0617f
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -59,7 +59,7 @@ makedepends="
  libxslt-devel minizip-devel mit-krb5-devel nss-devel opus-devel
  pciutils-devel snappy-devel speech-dispatcher-devel speex-devel
  xcb-proto zlib-devel libaom-devel libffi-devel libevdev-devel
- compiler-rt
+ compiler-rt${_llvmver} rust-std
  $(vopt_if pipewire pipewire-devel)
  $(vopt_if pulseaudio pulseaudio-devel)
  $(vopt_if sndio sndio-devel)"
@@ -122,8 +122,9 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
 	patch -Np1 -i $PATCHESDIR/fix-missing-TEMP_FAILURE_RETRY-macro.patch
 	patch -Np1 -i $PATCHESDIR/libc_malloc.patch
+	patch -Np1 -i $PATCHESDIR/llvm19.patch
 	patch -Np1 -i $PATCHESDIR/no-getcontext.patch
-	# patch -Np1 -i $PATCHESDIR/reenable-linux-i686-builds.patch
+	patch -Np1 -i $PATCHESDIR/node-do-not-check-version.patch
 	patch -Np1 -i $PATCHESDIR/remove-sys-cdefs-includes.patch
 	patch -Np1 -i $PATCHESDIR/revert-rust-Zdefault-visibility.patch
 	patch -Np1 -i $PATCHESDIR/sandbox-membarrier.patch
@@ -245,12 +246,14 @@ do_configure() {
 		"use_lld=$(vopt_if clang true false)"
 		'clang_use_chrome_plugins=false'
 		'clang_base_path="/usr"'
+		"clang_cross_path=\"${XBPS_CROSS_BASE}\""
     "clang_version=\"${clang_version%%.*}\""
 
 		"use_custom_libcxx=$(vopt_if libcxx true false)" # https://github.com/llvm/llvm-project/issues/61705
 
     'enable_rust=true'
 		'rust_sysroot_absolute="/usr"'
+		"rust_cross_sysroot_absolute=\"${XBPS_CROSS_BASE}\""
 		'rust_bindgen_root="/usr"'
     "rustc_version=\"$(rustc --version)\""
 
