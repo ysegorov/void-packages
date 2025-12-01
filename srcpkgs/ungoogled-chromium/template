@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=141.0.7390.107
+version=142.0.7444.175
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -26,8 +26,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="5bc04797e840e00fcae98b85a3bd43359e5342916e4b1f452d3d7e70acc43502
- 338bebdad1766880d1ea0fcab344f1c64eb7bc78d73ae41f70da222d24793afb
+checksum="619b37ab0273f72fac859fff8dd89fbf1b7ae7e7ccb8d67bc79281b24f683bc9
+ ec3584995b6a69373fc06f6230602c1ebc68f802feedba44c962dc25bb896e33
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -92,6 +92,11 @@ if [ "$CROSS_BUILD" ]; then
 	esac
 fi
 
+if [ "$build_option_qt6" ]; then
+  subpackages+=" ungoogled-chromium-qt6"
+fi
+
+
 do_patch() {
 	# prevent annoying errors when regenerating gni
 	vsed -i 's,^update_readme$,#update_readme,' \
@@ -114,14 +119,14 @@ do_patch() {
 
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-124-iwyu-sys-select-dawn-terminal.patch
-	patch -Np1 -i $PATCHESDIR/chromium-126-split-threshold-for-reg-with-hint.patch
 	patch -Np1 -i $PATCHESDIR/chromium-138-fix-rust-1.88.0.patch
 	patch -Np1 -i $PATCHESDIR/chromium-138-rust-clang_lib.patch
 	# patch -Np1 -i $PATCHESDIR/chromium-138-rust-musl-targets.patch
 	patch -Np1 -R -i $PATCHESDIR/chromium-140-8393b61.patch
 	patch -Np1 -i $PATCHESDIR/chromium-141-cross-toolchain.patch
 	patch -Np1 -i $PATCHESDIR/chromium-141-cssstylesheet-iwyu.patch
-	patch -Np1 -i $PATCHESDIR/chromium-141-fc-cache-version.patch
+	patch -Np1 -i $PATCHESDIR/chromium-142-autofill-incomplete-formfielddata.patch
+	patch -Np1 -i $PATCHESDIR/chromium-142-reenable-i686.patch
 	patch -Np1 -i $PATCHESDIR/cr138-node-version-check.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
@@ -280,7 +285,6 @@ do_configure() {
 
 		'use_qt5=false'
 		"use_qt6=$(vopt_if qt6 true false)"
-		"moc_qt6_path=\"/usr/lib/qt6/libexec\""
 
 		'use_cups=true'
 
@@ -317,12 +321,18 @@ do_configure() {
 		'use_cfi_icall=false'
 
 		"use_thin_lto=$(vopt_if lto true false)"
+		"chrome_pgo_phase=0"
 
 		# from ungoogled-chromium-archlinux PKGBUILD
 		'blink_enable_generated_code_formatting=false'
 		'enable_platform_hevc=true'
 		'enable_hevc_parser_and_hw_decoder=true'
 	)
+
+	if [ "$build_option_qt6" ];then
+		conf+=('moc_qt6_path="/usr/lib/qt6/libexec"')
+	fi
+
 
 	# Append ungoogled chromium flags to _flags array
 	# see https://github.com/ungoogled-software/ungoogled-chromium/blob/master/flags.gn
@@ -375,39 +385,50 @@ do_build() {
 }
 
 do_install() {
-	vmkdir usr/lib/chromium
+	vmkdir usr/lib/${pkgname}
 
-	vinstall out/Release/chrome 755 usr/lib/chromium chromium
-	vinstall out/Release/chrome_crashpad_handler 755 usr/lib/chromium chrome_crashpad_handler
-	vinstall out/Release/chromedriver 755 usr/lib/chromium chromedriver
-	vinstall out/Release/libEGL.so 755 usr/lib/chromium libEGL.so
-	vinstall out/Release/libGLESv2.so 755 usr/lib/chromium libGLESv2.so
-	vinstall out/Release/libvk_swiftshader.so 755 usr/lib/chromium libvk_swiftshader.so
-	vinstall out/Release/vk_swiftshader_icd.json 755 usr/lib/chromium vk_swiftshader_icd.json
-	vinstall out/Release/libqt6_shim.so 755 usr/lib/chromium libqt6_shim.so
+	vinstall out/Release/chrome 755 usr/lib/${pkgname} ${pkgname}
+	vinstall out/Release/chrome_crashpad_handler 755 usr/lib/${pkgname} chrome_crashpad_handler
+	vinstall out/Release/chromedriver 755 usr/lib/${pkgname} chromedriver
+	vinstall out/Release/libEGL.so 755 usr/lib/${pkgname} libEGL.so
+	vinstall out/Release/libGLESv2.so 755 usr/lib/${pkgname} libGLESv2.so
+	vinstall out/Release/libvk_swiftshader.so 755 usr/lib/${pkgname} libvk_swiftshader.so
+	vinstall out/Release/vk_swiftshader_icd.json 755 usr/lib/${pkgname} vk_swiftshader_icd.json
+	if [ $build_option_qt6 ]; then
+		  vinstall out/Release/libqt6_shim.so 755 usr/lib/${pkgname} libqt6_shim.so
+	fi
 
-	vcopy "out/Release/*.bin" usr/lib/chromium
-	vcopy "out/Release/*.pak" usr/lib/chromium
+	vcopy "out/Release/*.bin" usr/lib/${pkgname}
+	vcopy "out/Release/*.pak" usr/lib/${pkgname}
 
-	vmkdir usr/lib/chromium/locales
-	vcopy "out/Release/locales/*.pak" usr/lib/chromium/locales
+	vmkdir usr/lib/${pkgname}/locales
+	vcopy "out/Release/locales/*.pak" usr/lib/${pkgname}/locales
 
 	vinstall ${FILESDIR}/chromium.desktop 644 usr/share/applications
 
-	vinstall out/Release/icudtl.dat 0644 usr/lib/chromium
+	vinstall out/Release/icudtl.dat 0644 usr/lib/${pkgname}
 
 	for size in 24 48 64 128 256; do
 		vinstall "chrome/app/theme/chromium/product_logo_${size}.png" \
 			644 \
-			usr/share/icons/hicolor/${size}x${size}/apps chromium.png
+			usr/share/icons/hicolor/${size}x${size}/apps ${pkgname}.png
 	done
 	for size in 16 32; do
 		vinstall "chrome/app/theme/default_100_percent/chromium/product_logo_${size}.png" \
 			644 \
-			usr/share/icons/hicolor/${size}x${size}/apps chromium.png
+			usr/share/icons/hicolor/${size}x${size}/apps ${pkgname}.png
 	done
 
 	vbin ${FILESDIR}/chromium.sh chromium
 	vlicense LICENSE
-	ln -sf /usr/lib/chromium/chromedriver ${DESTDIR}/usr/bin/chromedriver
+	ln -sf /usr/lib/${pkgname}/chromedriver ${DESTDIR}/usr/bin/chromedriver
+
+}
+
+ungoogled-chromium-qt6_package() {
+        depends="${sourcepkg}>=${version}_${revision}"
+        short_desc+=" - Qt6 integration"
+        pkg_install() {
+                vmove usr/lib/${sourcepkg}/libqt6_shim.so
+        }
 }
