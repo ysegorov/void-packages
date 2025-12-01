@@ -48,7 +48,7 @@ configure_args="
  -DLLVM_SPIRV=/usr/bin/llvm-spirv
 "
 hostmakedepends="perl python3 zlib-devel libffi-devel swig python3-Sphinx
- python3-recommonmark python3-sphinx-automodapi python3-sphinx-markdown-tables python3-yaml pkg-config
+ python3-sphinx-automodapi python3-sphinx-markdown-tables python3-yaml pkg-config
  python3-mdit-py-plugins python3-MyST-Parser python3-markdown-it
  patchelf $(vopt_if graphviz graphviz)"
 makedepends="python3-devel zlib-devel elfutils-devel libffi-devel libedit-devel
@@ -62,8 +62,6 @@ checksum=3a0921d78be74302cb054da1dad59e706814d8fed3a6ac9b532e935825a0715c
 conflicts="llvm18>=0 llvm17>=0 llvm15>=0"
 lib32disabled=yes
 python_version=3
-
-nocross="until the host llvm21 is build"
 
 if [ "$CROSS_BUILD" ]; then
 	hostmakedepends+=" llvm${_major}-cross-tools SPIRV-LLVM-Translator${_major}"
