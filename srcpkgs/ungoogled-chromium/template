@@ -3,7 +3,7 @@
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
 version=143.0.7499.169
-revision=1
+revision=2
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
 maintainer="Yuri Egorov <ysegorov@gmail.com>"
@@ -402,7 +402,7 @@ do_install() {
 	vmkdir usr/lib/${pkgname}/locales
 	vcopy "out/Release/locales/*.pak" usr/lib/${pkgname}/locales
 
-	vinstall ${FILESDIR}/chromium.desktop 644 usr/share/applications
+	vinstall ${FILESDIR}/ungoogled-chromium.desktop 644 usr/share/applications
 
 	vinstall out/Release/icudtl.dat 0644 usr/lib/${pkgname}
 
@@ -417,7 +417,7 @@ do_install() {
 			usr/share/icons/hicolor/${size}x${size}/apps ${pkgname}.png
 	done
 
-	vbin ${FILESDIR}/chromium.sh chromium
+	vbin ${FILESDIR}/ungoogled-chromium.sh ungoogled-chromium
 	vlicense LICENSE
 	ln -sf /usr/lib/${pkgname}/chromedriver ${DESTDIR}/usr/bin/chromedriver
 
