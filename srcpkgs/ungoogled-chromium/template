@@ -2,8 +2,8 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=143.0.7499.169
-revision=2
+version=144.0.7559.109
+revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
 maintainer="Yuri Egorov <ysegorov@gmail.com>"
@@ -26,8 +26,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="0d03408450e552a1012321b61f5bb6e0f07a7f6e2ef111b519066876c1a5e747
- 9061f9e31b36d1038a0880ca20749f8471ab5c48a8410e288ccce9721c467c84
+checksum="06c6bf558a17636070495d2d33117501c361c6984d71356188cdfae7d9ee8bc1
+ fd41306be5ee9411cae735a9a49a79dedeaacc5a8b9fb93f7b914192addf143e
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -122,10 +122,10 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-138-rust-clang_lib.patch
 	# patch -Np1 -i $PATCHESDIR/chromium-138-rust-musl-targets.patch
 	patch -Np1 -i $PATCHESDIR/chromium-141-cross-toolchain.patch
-	patch -Np1 -i $PATCHESDIR/chromium-141-cssstylesheet-iwyu.patch
 	patch -Np1 -i $PATCHESDIR/chromium-142-reenable-i686.patch
 	patch -Np1 -i $PATCHESDIR/chromium-143--libsync-__BEGIN_DECLS.patch
 	patch -Np1 -R -i $PATCHESDIR/chromium-143-revert-libpng_for_testonly.patch
+	patch -Np1 -i $PATCHESDIR/chromium-144-rust-nightly-capable.patch
 	patch -Np1 -i $PATCHESDIR/cr138-node-version-check.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
