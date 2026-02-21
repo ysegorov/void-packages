@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=144.0.7559.109
+version=145.0.7632.109
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -26,8 +26,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="06c6bf558a17636070495d2d33117501c361c6984d71356188cdfae7d9ee8bc1
- fd41306be5ee9411cae735a9a49a79dedeaacc5a8b9fb93f7b914192addf143e
+checksum="4b9460a4c852b824dbd3c6de00948fe97b760e89ac56c62b5e28f8581a5c1690
+ 17b1909d1525020f6e7241dc11f8cbec591c8ac985e023846e74cb40a45c0aa0
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -92,6 +92,7 @@ if [ "$CROSS_BUILD" ]; then
 	esac
 fi
 
+subpackages="" # xbps-src does not reset the variable
 if [ "$build_option_qt6" ]; then
   subpackages+=" ungoogled-chromium-qt6"
 fi
@@ -127,6 +128,12 @@ do_patch() {
 	patch -Np1 -R -i $PATCHESDIR/chromium-143-revert-libpng_for_testonly.patch
 	patch -Np1 -i $PATCHESDIR/chromium-144-rust-nightly-capable.patch
 	patch -Np1 -i $PATCHESDIR/cr138-node-version-check.patch
+	patch -Np1 -i $PATCHESDIR/chromium-145-iwyu-dev_t.patch
+
+	# NB. patches from srcpkg/chromium, makes ungoogled-chromium patches fail
+	# patch -Np1 -i $PATCHESDIR/chromium-144-no-esbuild.patch
+	# patch -Np1 -i $PATCHESDIR/chromium-145-rollup-as-rollup.patch
+	# patch -Np1 -i $PATCHESDIR/chromium-145-rollup-wasm.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
@@ -158,6 +165,11 @@ do_patch() {
 	rm -f third_party/node/linux/node-linux-x64/bin/node
 	ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 	ln -s /usr/bin/java third_party/jdk/current/bin/
+
+    (
+        cd third_party/devtools-frontend/src
+        npm ci --ignore-scripts
+    )
 }
 
 _setup_clang() {
