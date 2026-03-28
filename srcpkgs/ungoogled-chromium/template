@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=145.0.7632.109
+version=146.0.7680.164
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -11,6 +11,9 @@ license="BSD-3-Clause"
 homepage="https://github.com/ungoogled-software/ungoogled-chromium"
 
 conflicts="chromium"
+
+_rollup=4.22.4
+_llvmver=21
 
 # ungoogled chromium variables
 _uc_usr=ungoogled-software
@@ -26,8 +29,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="4b9460a4c852b824dbd3c6de00948fe97b760e89ac56c62b5e28f8581a5c1690
- 17b1909d1525020f6e7241dc11f8cbec591c8ac985e023846e74cb40a45c0aa0
+checksum="2d4163d39cc85c58d0bad83ccb5f200174cc99e3627fc56b095025f1ae7038c8
+ d5f2a7e20af064fa70dc87095021cf035842527fdc09f73a743dba028562d538
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -43,8 +46,6 @@ desc_option_debug="Build with debug symbols"
 desc_option_lto="Enable Link Time Optimization"
 desc_option_pipewire="Enable support for screen sharing for WebRTC via PipeWire"
 desc_option_drumbrake="WebAssembly Interpreter"
-
-_llvmver=21
 
 hostmakedepends="
  $(vopt_if clang "clang${_llvmver} lld${_llvmver} llvm${_llvmver} compiler-rt${_llvmver}")
@@ -122,24 +123,22 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-124-iwyu-sys-select-dawn-terminal.patch
 	patch -Np1 -i $PATCHESDIR/chromium-138-rust-clang_lib.patch
 	# patch -Np1 -i $PATCHESDIR/chromium-138-rust-musl-targets.patch
-	patch -Np1 -i $PATCHESDIR/chromium-141-cross-toolchain.patch
 	patch -Np1 -i $PATCHESDIR/chromium-142-reenable-i686.patch
 	patch -Np1 -i $PATCHESDIR/chromium-143--libsync-__BEGIN_DECLS.patch
 	patch -Np1 -R -i $PATCHESDIR/chromium-143-revert-libpng_for_testonly.patch
-	patch -Np1 -i $PATCHESDIR/chromium-144-rust-nightly-capable.patch
 	patch -Np1 -i $PATCHESDIR/cr138-node-version-check.patch
 	patch -Np1 -i $PATCHESDIR/chromium-145-iwyu-dev_t.patch
 
-	# NB. patches from srcpkg/chromium, makes ungoogled-chromium patches fail
-	# patch -Np1 -i $PATCHESDIR/chromium-144-no-esbuild.patch
-	# patch -Np1 -i $PATCHESDIR/chromium-145-rollup-as-rollup.patch
-	# patch -Np1 -i $PATCHESDIR/chromium-145-rollup-wasm.patch
+	patch -Np1 -i $PATCHESDIR/chromium-146-clang-cross-libdir.patch
+	patch -Np1 -i $PATCHESDIR/chromium-146-cross-rust-toolchain.patch
+	patch -Np1 -i $PATCHESDIR/chromium-146-rust-pre1.95-bytemuck.patch
+	patch -Np1 -i $PATCHESDIR/chromium-146-sanitize-ignore-for-ubsan-feature.patch
+	patch -Np1 -i $PATCHESDIR/chromium-146-unbundle-v8-cross-snapshot.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
 	patch -Np1 -i $PATCHESDIR/fix-missing-TEMP_FAILURE_RETRY-macro.patch
 	patch -Np1 -i $PATCHESDIR/libc_malloc.patch
-	patch -Np1 -i $PATCHESDIR/llvm19.patch
 	patch -Np1 -i $PATCHESDIR/no-getcontext.patch
 	patch -Np1 -i $PATCHESDIR/node-do-not-check-version.patch
 	patch -Np1 -i $PATCHESDIR/remove-sys-cdefs-includes.patch
@@ -166,10 +165,6 @@ do_patch() {
 	ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
 	ln -s /usr/bin/java third_party/jdk/current/bin/
 
-    (
-        cd third_party/devtools-frontend/src
-        npm ci --ignore-scripts
-    )
 }
 
 _setup_clang() {
@@ -194,11 +189,14 @@ _setup_clang() {
 }
 
 _setup_toolchain() {
-	if [ "$build_option_clang" ]; then
-		_setup_clang
-	fi
-	# CXXFLAGS+=" -fdebug-prefix-map=$wrksrc=."
-	# CFLAGS+=" -fdebug-prefix-map=$wrksrc=."
+    if [ "$build_option_clang" ]; then
+        _setup_clang
+    fi
+    # CXXFLAGS+=" -fdebug-prefix-map=$wrksrc=."
+    # CFLAGS+=" -fdebug-prefix-map=$wrksrc=."
+
+    # XXX: need for error: the option `Z` is only accepted on the nightly compiler
+    export RUSTC_BOOTSTRAP=1
 }
 
 do_configure() {
@@ -275,7 +273,7 @@ do_configure() {
 		'rust_sysroot_absolute="/usr"'
 		"rust_cross_sysroot_absolute=\"${XBPS_CROSS_BASE}\""
 		'rust_bindgen_root="/usr"'
-    "rustc_version=\"$(rustc --version)\""
+		"rustc_version=\"$(rustc --version | cut -d' ' -f2)\""
 
 		'node_version_check=false'
 
@@ -387,9 +385,6 @@ do_configure() {
 }
 
 do_build() {
-  # XXX: need for error: the option `Z` is only accepted on the nightly compiler
-  export RUSTC_BOOTSTRAP=1
-
 	_setup_toolchain
 	CCACHE_SLOPPINESS=include_file_mtime ninja -C out/Release ${makejobs} chrome chromedriver chrome_crashpad_handler
 }
