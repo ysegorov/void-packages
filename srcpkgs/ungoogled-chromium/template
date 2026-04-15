@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=146.0.7680.164
+version=147.0.7727.55
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -29,8 +29,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="2d4163d39cc85c58d0bad83ccb5f200174cc99e3627fc56b095025f1ae7038c8
- d5f2a7e20af064fa70dc87095021cf035842527fdc09f73a743dba028562d538
+checksum="57594966be592efdb9fe6491f5a834de237f5c7decdca5eb1f7d7a5d38dd54e9
+ 167f12552e356abc229c5fc99ec670021e9ce171fe5dc995985855c6d1635d63
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -120,7 +120,6 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/angle-wayland-include.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
-	patch -Np1 -i $PATCHESDIR/chromium-124-iwyu-sys-select-dawn-terminal.patch
 	patch -Np1 -i $PATCHESDIR/chromium-138-rust-clang_lib.patch
 	# patch -Np1 -i $PATCHESDIR/chromium-138-rust-musl-targets.patch
 	patch -Np1 -i $PATCHESDIR/chromium-142-reenable-i686.patch
@@ -134,6 +133,7 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-146-rust-pre1.95-bytemuck.patch
 	patch -Np1 -i $PATCHESDIR/chromium-146-sanitize-ignore-for-ubsan-feature.patch
 	patch -Np1 -i $PATCHESDIR/chromium-146-unbundle-v8-cross-snapshot.patch
+	patch -Np1 -i $PATCHESDIR/chromium-147-revert-clang-no-lifetime-dse-flag.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
