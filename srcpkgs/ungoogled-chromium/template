@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=147.0.7727.137
+version=148.0.7778.96
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -29,8 +29,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="b2649077061c59e286ad43b3a3c8c5b490eab82ca95205f14b9c265b1ee442d4
- 88736ee761d1f1a54c46faa8c49d2bd24699d4c1ee4670c98ea6def02b68a433
+checksum="694d4e0269e11056c6dff748da7e8354bfbf90da7ce8f7467a0acfe2994a8688
+ 13199ffa3bfafcdfa907116432f13f34bfc7767dafb09369ba7814adc570183d
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -130,10 +130,13 @@ do_patch() {
 
 	patch -Np1 -i $PATCHESDIR/chromium-146-clang-cross-libdir.patch
 	patch -Np1 -i $PATCHESDIR/chromium-146-cross-rust-toolchain.patch
-	patch -Np1 -i $PATCHESDIR/chromium-146-sanitize-ignore-for-ubsan-feature.patch
+	# patch -Np1 -i $PATCHESDIR/chromium-146-sanitize-ignore-for-ubsan-feature.patch  # TODO: rm?
+	patch -Np1 -i $PATCHESDIR/chromium-146-drop-unknown-clang-flag.patch
 	patch -Np1 -i $PATCHESDIR/chromium-146-unbundle-v8-cross-snapshot.patch
 	patch -Np1 -i $PATCHESDIR/chromium-147-llvm-22.patch
 	patch -Np1 -i $PATCHESDIR/chromium-147-rust-1.95-bytemuck.patch
+	patch -Np1 -i $PATCHESDIR/chromium-148-revert-clang-fsanitize-return-flag-1.patch
+	patch -Np1 -i $PATCHESDIR/chromium-148-revert-clang-fsanitize-return-flag-2.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
@@ -160,9 +163,14 @@ do_patch() {
 	  -f "${_ungoogled_repo}/domain_substitution.list" -c domainsubcache.tar.gz ./
 
 	# Link to system tools required by the build
-	mkdir -p third_party/node/linux/node-linux-x64/bin third_party/jdk/current/bin/
+	mkdir -p third_party/node/linux/node-linux-x64/bin \
+           third_party/rust-toolchain/bin/ \
+           third_party/gperf/cipd/bin/ \
+           third_party/jdk/current/bin/
 	rm -f third_party/node/linux/node-linux-x64/bin/node
 	ln -s /usr/bin/node third_party/node/linux/node-linux-x64/bin/
+	ln -s /usr/bin/rustc third_party/rust-toolchain/bin/
+	ln -s /usr/bin/gperf third_party/gperf/cipd/bin/
 	ln -s /usr/bin/java third_party/jdk/current/bin/
 
 }
