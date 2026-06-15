@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=148.0.7778.167
+version=149.0.7827.114
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -29,8 +29,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="57a78706c149afe8cacdc801c20ef89ad1c1fbba0ad2154fda03f4fc0f33c9d6
- 16006bae1ec831a5cca59db79d8a111f5d72aad0f0126f4d44d2d3d1941b1bc0
+checksum="6d31995447d1b505ce007cea67d5f66d10710e1660a1c304d0ae5c54aeca4eff
+ a6d882a5739515cfca122e8f3393e104078071c79a9f0e4eb8c5065bc04e4a58
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -117,7 +117,6 @@ do_patch() {
 	#   third_party/maldoca/src/maldoca/ole/oss_utils.h
 
 	# patches from ../chromium/patches/
-	patch -Np1 -i $PATCHESDIR/angle-wayland-include.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-117-string-convert.patch
 	patch -Np1 -i $PATCHESDIR/chromium-138-rust-clang_lib.patch
@@ -130,13 +129,10 @@ do_patch() {
 
 	patch -Np1 -i $PATCHESDIR/chromium-146-clang-cross-libdir.patch
 	patch -Np1 -i $PATCHESDIR/chromium-146-cross-rust-toolchain.patch
-	# patch -Np1 -i $PATCHESDIR/chromium-146-sanitize-ignore-for-ubsan-feature.patch  # TODO: rm?
-	patch -Np1 -i $PATCHESDIR/chromium-146-drop-unknown-clang-flag.patch
 	patch -Np1 -i $PATCHESDIR/chromium-146-unbundle-v8-cross-snapshot.patch
 	patch -Np1 -i $PATCHESDIR/chromium-147-llvm-22.patch
 	patch -Np1 -i $PATCHESDIR/chromium-147-rust-1.95-bytemuck.patch
-	patch -Np1 -i $PATCHESDIR/chromium-148-revert-clang-fsanitize-return-flag-1.patch
-	patch -Np1 -i $PATCHESDIR/chromium-148-revert-clang-fsanitize-return-flag-2.patch
+	patch -Np1 -i $PATCHESDIR/chromium-149-drop-unknown-clang-flag.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
