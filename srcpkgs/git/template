@@ -1,6 +1,6 @@
 # Template file for 'git'
 pkgname=git
-version=2.54.0
+version=2.55.0
 revision=1
 build_helper=rust
 hostmakedepends="asciidoc gettext perl pkg-config tk xmlto rust cargo"
@@ -16,7 +16,7 @@ license="GPL-2.0-only"
 homepage="https://git-scm.com/"
 changelog="https://raw.githubusercontent.com/git/git/master/Documentation/RelNotes/${version}.adoc"
 distfiles="https://www.kernel.org/pub/software/scm/git/git-${version}.tar.xz"
-checksum=f689162364c10de79ef89aa8dbf48731eb057e34edbbd20aca510ce0154681a3
+checksum=457fdb04dc8728e007d4688695e6912e6f680727920f2a40bf11eacc17505357
 replaces="git-perl>=0"
 python_version=3
 
@@ -58,6 +58,8 @@ do_configure() {
 		NO_REGEX = Yes
 		EOF
 	fi
+	mkdir -p "target"
+	ln -sf . "target/$RUST_TARGET"
 }
 
 do_build() {
