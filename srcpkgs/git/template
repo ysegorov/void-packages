@@ -2,8 +2,10 @@
 pkgname=git
 version=2.54.0
 revision=1
-hostmakedepends="asciidoc gettext perl pkg-config tk xmlto"
-makedepends="libglib-devel libcurl-devel libsecret-devel pcre2-devel tk-devel"
+build_helper=rust
+hostmakedepends="asciidoc gettext perl pkg-config tk xmlto rust cargo"
+makedepends="libglib-devel libcurl-devel libsecret-devel pcre2-devel tk-devel
+ rust-std"
 # Required by https://
 depends="ca-certificates perl-Authen-SASL perl-MIME-tools perl-Net-SMTP-SSL"
 checkdepends="gnupg cvs cvsps2 perl-DBD-SQLite subversion subversion-perl
@@ -46,6 +48,8 @@ do_configure() {
 	NEEDS_LIBRT =
 	# https://lore.kernel.org/git/xmqqr02wbtdn.fsf@gitster.g/
 	CSPRNG_METHOD = getrandom
+	CARGO_ARGS = --release
+	RUST_TARGET_DIR = target/release
 	EOF
 
 	if [ "$XBPS_TARGET_LIBC" = musl ]; then
