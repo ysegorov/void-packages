@@ -3,16 +3,16 @@ Author: Lukasz Anforowicz <lukasza@chromium.org>
 Date:   Tue Sep 30 07:08:03 2025 -0700
 
     [rust png] Reland: Reinforce `testonly`-ness of some users of `libpng`.
-    
+
     This reverts commit 7fa4c2d7ab42a48247ce8e0290cbb7e854990f1e and
     effectively relands https://crrev.com/c/6976870.  The reland is
     attempted after using wildcards to cover extra gni-generated targets.
     `Cq-Include-Trybots` directives in the CL description should verify
     correctness of the reland.  Original CL description follows:
-    
+
     This CL extracts a separate `third_party/libpng:libpng_for_testonly`
     target which:
-    
+
     1) Is a `group` that proxies/forwards to the `libpng` target by listing
        it as its `public_deps`
     2) Has limited visibility (based on the new `libpng_testonly_visibility`
@@ -20,7 +20,7 @@ Date:   Tue Sep 30 07:08:03 2025 -0700
        The new visibility is almost unchanged, except for explicitly
        spelling out some targets instead of using wildcards
     3) Is marked as `testonly`
-    
+
     Bug: 443128323
     Change-Id: If7ba0d184324a5c662aaf2d52122994ea778d452
     Cq-Include-Trybots: luci.chromium.try:ios-catalyst
@@ -61,19 +61,6 @@ index a4703c3692d..2d70f7a5fe9 100644
        "//ui/base:test_support",
        "//ui/resources:ui_test_pak",
        "//ui/views",
-diff --git a/testing/libfuzzer/fuzzers/BUILD.gn b/testing/libfuzzer/fuzzers/BUILD.gn
-index 7d242e177f0..1c67eee1598 100644
---- a/testing/libfuzzer/fuzzers/BUILD.gn
-+++ b/testing/libfuzzer/fuzzers/BUILD.gn
-@@ -104,7 +104,7 @@ fuzzer_test("libpng_progressive_read_fuzzer") {
-   sources = [ "libpng_read_fuzzer.cc" ]
-   deps = [
-     "//base",
--    "//third_party/libpng",
-+    "//third_party/libpng:libpng_for_testonly",
-   ]
-   dict = "dicts/png.dict"
-   seed_corpuses = libpng_seed_corpuses
 diff --git a/third_party/libpng/BUILD.gn b/third_party/libpng/BUILD.gn
 index d4bdea1e33c..3e31348b94f 100644
 --- a/third_party/libpng/BUILD.gn
@@ -81,7 +68,7 @@ index d4bdea1e33c..3e31348b94f 100644
 @@ -130,6 +130,14 @@ if (is_win) {
    }
  }
- 
+
 +group("libpng_for_testonly") {
 +  testonly = true
 +  public_deps = [ ":libpng" ]
@@ -121,7 +108,7 @@ index d56651bedc7..2b5f3d38488 100644
 +    testonly = true
      binary_label = ":$target_name($imagediff_toolchain)"
      binary_output_name = "image_diff"
- 
+
 diff --git a/ui/gfx/BUILD.gn b/ui/gfx/BUILD.gn
 index f6a40abfe99..83d8f55027a 100644
 --- a/ui/gfx/BUILD.gn
