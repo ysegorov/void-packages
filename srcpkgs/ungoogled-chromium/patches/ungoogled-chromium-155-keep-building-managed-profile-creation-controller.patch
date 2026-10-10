@@ -1,0 +1,21 @@
+diff --git a/patches/core/ungoogled-chromium/remove-unused-preferences-fields.patch b/patches/core/ungoogled-chromium/remove-unused-preferences-fields.patch
+index fd0cab8..e40c749 100644
+--- a/patches/core/ungoogled-chromium/remove-unused-preferences-fields.patch
++++ b/patches/core/ungoogled-chromium/remove-unused-preferences-fields.patch
+@@ -143,16 +143,6 @@
+  
+  #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+  #include "chrome/browser/browser_process.h"
+---- a/chrome/browser/enterprise/BUILD.gn
+-+++ b/chrome/browser/enterprise/BUILD.gn
+-@@ -793,7 +793,6 @@ source_set("impl") {
+-       "signin/enterprise_signin_prefs.cc",
+-       "signin/enterprise_signin_service.cc",
+-       "signin/enterprise_signin_service_factory.cc",
+--      "signin/managed_profile_creation_controller.cc",
+-       "signin/managed_profile_creator.cc",
+-       "signin/managed_profile_required_navigation_throttle.cc",
+-       "signin/oidc_authentication_signin_interceptor.cc",
+ --- a/chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.cc
+ +++ b/chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.cc
+ @@ -60,7 +60,6 @@

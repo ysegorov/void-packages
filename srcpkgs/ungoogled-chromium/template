@@ -2,7 +2,7 @@
 # Based on chromium, with ungoogled-chromium patches
 pkgname=ungoogled-chromium
 # See https://github.com/ungoogled-software/ungoogled-chromium for the latest version
-version=153.0.8010.52
+version=155.0.8059.39
 revision=1
 archs="x86_64"
 short_desc="A lightweight approach to removing Google web service dependency"
@@ -29,8 +29,8 @@ distfiles="https://commondatastorage.googleapis.com/chromium-browser-official/ch
  https://github.com/${_uc_usr}/ungoogled-chromium/archive/${_uc_ver}.tar.gz>${_uc_name}.tar.gz
  https://github.com/foutrelis/chromium-launcher/archive/v${_launcher_ver}/chromium-launcher-${_launcher_ver}.tar.gz"
 
-checksum="ed6fcbf913f12f97c619616b35fa8b56f6e61c53bdbf00cbb0e7ef839a39844a
- c98a3a5c243471522d8aefc079f62bdcbc7b953e34dc6187197e4abff03a0a94
+checksum="d450182ea38a6485febfdfdad6f3a3f1d5d3408cc368329b94502c629ef8ec7e
+ b78481629051c33218ee23e63f358b1279079e37d03b752c3594e60f4332ab74
  213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a"
 
 lib32disabled=yes
@@ -119,7 +119,6 @@ do_patch() {
 	# patches from ../chromium/patches/
 
 	patch -Np1 -i $PATCHESDIR/chromium-138-rust-clang_lib.patch
-	# patch -Np1 -i $PATCHESDIR/chromium-138-rust-musl-targets.patch
 	patch -Np1 -i $PATCHESDIR/chromium-143--libsync-__BEGIN_DECLS.patch
 	patch -Np1 -R -i $PATCHESDIR/chromium-143-revert-libpng_for_testonly.patch
 	patch -Np1 -i $PATCHESDIR/cr138-node-version-check.patch
@@ -129,15 +128,18 @@ do_patch() {
 	patch -Np1 -i $PATCHESDIR/chromium-146-unbundle-v8-cross-snapshot.patch
 	patch -Np1 -i $PATCHESDIR/chromium-147-llvm-22.patch
 	patch -Np1 -i $PATCHESDIR/chromium-147-rust-1.95-bytemuck.patch
+	patch -Np1 -i $PATCHESDIR/chromium-148-v8-no-san-trap.patch
 	patch -Np1 -i $PATCHESDIR/chromium-149-drop-unknown-clang-flag.patch
 	patch -Np1 -i $PATCHESDIR/chromium-150-reenable-i686.patch
+	patch -Np1 -i $PATCHESDIR/chromium-151-llvm22.patch
 	patch -Np1 -i $PATCHESDIR/chromium-152-unbundle-opus-devtools.patch
 	patch -Np1 -i $PATCHESDIR/chromium-153-cross-rust-toolchain.patch
-	patch -Np1 -i $PATCHESDIR/chromium-153-crubit.patch
-	patch -Np1 -i $PATCHESDIR/chromium-153-no-python-vendoring.patch
 	patch -Np1 -i $PATCHESDIR/chromium-153-typescript-break-definitions.patch
 	patch -Np1 -i $PATCHESDIR/chromium-153-unbundle-opus-iamf.patch
 	patch -Np1 -i $PATCHESDIR/chromium-153-typescript.patch
+	patch -Np1 -i $PATCHESDIR/chromium-154-revert-private-verification-tokens.patch
+	patch -Np1 -i $PATCHESDIR/chromium-155-no-python-vendoring.patch
+	patch -Np1 -i $PATCHESDIR/chromium-155-revert-crubit.patch
 
 	patch -Np1 -i $PATCHESDIR/chromium-system-nodejs.patch
 	patch -Np1 -i $PATCHESDIR/fix-argument_spec-isnan-isinf.patch
@@ -155,6 +157,11 @@ do_patch() {
 	# Ungoogled Chromium changes
 	_ungoogled_repo="../${_uc_name}"
 	_uc_utils="${_ungoogled_repo}/utils"
+
+	# FIXME patch ungoogled-chromium patches to keep building ungoogled-chromium for void linux
+	patch -Np1 -d "${_ungoogled_repo}" -i $PATCHESDIR/ungoogled-chromium-155-keep-building-managed-profile-creation-controller.patch
+	patch -Np1 -d "${_ungoogled_repo}" -i $PATCHESDIR/ungoogled-chromium-155-keep-bundled-typescript-esbuild-llvm-libclang-binaries.patch
+
 	msg_normal "Pruning binaries...\n"
 	python "${_uc_utils}/prune_binaries.py" ./ "${_ungoogled_repo}/pruning.list"
 	msg_normal "Applying patches...\n"
@@ -175,9 +182,6 @@ do_patch() {
 	ln -s /usr/bin/gperf third_party/gperf/cipd/bin/
 	ln -s /usr/bin/java third_party/jdk/current/bin/
 	ln -s /usr/bin/go third_party/dawn/tools/golang/linux-amd64/bin/go
-
-    # needed for build, not included in "...-lite" sources archive
-	/usr/bin/npm install -g typescript
 
 }
 
