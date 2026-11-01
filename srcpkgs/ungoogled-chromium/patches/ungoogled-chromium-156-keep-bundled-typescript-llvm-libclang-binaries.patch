@@ -2,14 +2,6 @@ diff --git a/utils/prune_binaries.py b/utils/prune_binaries.py
 index 3421b1c..2341cbd 100755
 --- a/utils/prune_binaries.py
 +++ b/utils/prune_binaries.py
-@@ -31,7 +31,6 @@ CONTINGENT_PATHS = (
-     'third_party/cpython3/',
-     'third_party/dawn/third_party/ninja/',
-     'third_party/dawn/tools/golang/',
--    'third_party/devtools-frontend/src/third_party/esbuild/',
-     'third_party/devtools-frontend/src/third_party/rollup_libs/',
-     'third_party/enterprise_companion/chromium_linux64/cipd/',
-     'third_party/google-java-format/',
 @@ -41,10 +40,6 @@ CONTINGENT_PATHS = (
      'third_party/ninja/',
      'third_party/openscreen/src/third_party/ninja/',
